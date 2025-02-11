@@ -22,3 +22,6 @@ python -m pip install --upgrade pip
 
 python -m pip install dearpygui 
 
+
+
+Once you have this done, if you are wondering "How do I test my files" then my answer is "py/python file.py" (py for windows, python for mac/linux). More files? another system? im just as lost <3
