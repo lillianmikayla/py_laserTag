@@ -31,7 +31,7 @@ def input_int_callback(sender, app_data, user_data):
     #userdata is row,col indicies of the cell, appdata is the actual contents
     #we can use this to send information into the database
     
-    #ADD INPUT CHECKING TO ASSURE ID IS VALID!
+    #might need to update input checking
 
 #callback for CODENAME handling, app_data = codename input
 def input_text_callback(sender, app_data, user_data):
@@ -44,6 +44,19 @@ def input_text_callback(sender, app_data, user_data):
 def network_swap_callback(sender, app_data, user_data):
     print(f"Input: {app_data}")
     print(f"Sender: {sender}")
+    
+    #invalid theme for handling invalid input scenario
+    with dpg.theme() as invalid_theme:
+        with dpg.theme_component(dpg.mvAll):
+            dpg.add_theme_color(dpg.mvThemeCol_FrameBg, (255, 0, 0), category=dpg.mvThemeCat_Core)  # Red background
+            dpg.add_theme_color(dpg.mvThemeCol_FrameBgHovered, (255, 0, 0), category=dpg.mvThemeCat_Core)  # Red background when hovered
+            dpg.add_theme_color(dpg.mvThemeCol_FrameBgActive, (255, 0, 0), category=dpg.mvThemeCat_Core)  # Red background when active
+            
+    #if IP address invalid:
+    #dpg.bind_item_theme(sender, invalid_theme)
+    
+    #when sending IP address if correct, reset sender theme to default
+    #dpg.bind_item_theme(sender, 0)
     
     #further modification to update network address here
 
