@@ -125,6 +125,7 @@ def show_main_window():
         dpg.add_text("Input new network address:")
         dpg.add_separator()
         dpg.add_input_text(callback=network_swap_callback, on_enter=True, hint="Enter IP Address", width = 200, indent=50)
+        dpg.add_button(label="Close", width=100, indent=100, callback=lambda: dpg.configure_item("modal_id", show=False))
         #add button to close window, and handling for failed IP address swap
     
     #Base window for bottom buttons
@@ -146,7 +147,7 @@ def main():
         dpg.add_static_texture(width, height, data, tag="splash_image")
 
     with dpg.window(tag="Splash Window", no_title_bar=True, no_resize=True, no_move=True, no_scrollbar=True):
-        dpg.add_image("splash_image", width=798, height=598)
+        dpg.add_image("splash_image", width=800, height=600)
 
     #finish graphics set up
     dpg.setup_dearpygui()
