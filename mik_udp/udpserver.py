@@ -1,4 +1,5 @@
 import socket
+#from PlayerDatabase import PlayerDatabase
 
 localIP     = "127.0.0.1"
 localPort   = 7501
@@ -13,6 +14,9 @@ UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 UDPServerSocket.bind((localIP, localPort))
 
 print("UDP server up and listening")
+
+# Initialize the player database
+#player_db = PlayerDatabase()
 
 # Listen for incoming datagrams
 
