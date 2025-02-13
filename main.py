@@ -2,6 +2,7 @@ import dearpygui.dearpygui as dpg
 import time
 from PlayerDatabase import PlayerDatabase
 
+#player DB class, previously class main in the database main.py test file
 class PlayerDBApp:
     def __init__(self):
         self.db = PlayerDatabase()  # No need to pass credentials!
