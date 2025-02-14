@@ -1,22 +1,53 @@
-# Implementing using sam_pyudptutorial and Strother example code.
-
 import socket
 
-msgFromClient = "Hello, I am a UDP client!" # Message to send to server.
-bytesToSend = str.encode(msgFromClient)
 bufferSize = 1024
-
-localPort   = 7501 # Maybe change?
-SERVER = socket.gethostbyname(socket.gethostname()) # Get IP address of computer, change to hardcode maybe?
-ADDR = (SERVER, localPort) # Tuple.
+localIP = "127.0.0.1"
+localPort = 7501
+ADDR = (localIP, localPort)
 FORMAT = 'utf-8'
+DISCONNECT_MESSAGE = "221"
 
 client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # Create a socket.
-# client.connect(ADDR) # Connect to server.
 
-client.sendto(bytesToSend, ADDR) # Send message to server.
+connected = True
+while connected:
+    cnt = 0
+    while cnt < 2:
+        equipmentID = input(f"Enter equipment ID of green player {cnt + 1}: ") # Collect equipment ID from user.
+        if equipmentID == DISCONNECT_MESSAGE: # If input = 221, disconnect.
+            bytesToSend = equipmentID.encode(FORMAT) 
+            client.sendto(bytesToSend, ADDR) 
+            connected = False # Break the loop.
+            break
+        
+        else: # If input is not 221, send the equipment ID to the server.
+            bytesToSend = equipmentID.encode(FORMAT)
+            client.sendto(bytesToSend, ADDR)
 
-msgFromServer = client.recvfrom(bufferSize)
-msg = "Message from Server{}".format(msgFromServer[0])
+            msgFromServer = client.recvfrom(bufferSize) 
+            msg = "Message from Server{}".format(msgFromServer[0]) 
+            print(msg)
 
-print(msg) # Print message from server, should be the client's equipment number.
+            cnt += 1 # Increment.
+        
+        if cnt == 2: # If cnt = 2, break the loop.
+            connected = False
+
+client.close() # Close the client.
+    
+
+# # Simpile input statement.
+# connected = True
+# while connected:
+#     equipmentID = input("Enter equipment ID: ")
+#     if equipmentID == DISCONNECT_MESSAGE:
+#         bytesToSend = equipmentID.encode(FORMAT)
+#         client.sendto(bytesToSend, ADDR)
+#         connected = False
+#     else:
+#         bytesToSend = equipmentID.encode(FORMAT)
+#         client.sendto(bytesToSend, ADDR)
+#         msgFromServer = client.recvfrom(bufferSize)
+#         msg = "Message from Server{}".format(msgFromServer[0])
+#         print(msg)
+# client.close()
