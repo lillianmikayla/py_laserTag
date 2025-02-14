@@ -36,7 +36,7 @@ while connected:
 client.close() # Close the client.
     
 
-# # Simpile input statement.
+# # Simple input statement.
 # connected = True
 # while connected:
 #     equipmentID = input("Enter equipment ID: ")
