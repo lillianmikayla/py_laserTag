@@ -1,5 +1,6 @@
 import psycopg2
 from psycopg2 import sql
+import udpclient
 
 class PlayerDatabase():
     def __init__(self):
@@ -19,6 +20,7 @@ class PlayerDatabase():
                 INSERT INTO players (id, codename) VALUES (%s, %s);
             ''', (player_id, codename))
         self.conn.commit()
+        udpclient.player_added()
 
     def get_codename_by_id(self, player_id):
         with self.conn.cursor() as cursor:

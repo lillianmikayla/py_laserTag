@@ -1,5 +1,7 @@
 import dearpygui.dearpygui as dpg
 import time
+import udpclient
+import udpserver
 from PlayerDatabase import PlayerDatabase
 
 #player DB class, previously class main in the database main.py test file
@@ -64,8 +66,10 @@ def input_text_callback(sender, app_data, user_data):
 def network_swap_callback(sender, app_data, user_data):
     print(f"Input: {app_data}")
     print(f"Sender: {sender}")
-    
+
     #further modification to update network address here
+    udpclient.change_network(app_data)
+    udpserver.change_network(app_data)
 
 def show_main_window(app_instance):
     dpg.delete_item("Splash Window")
