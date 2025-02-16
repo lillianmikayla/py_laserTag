@@ -24,9 +24,6 @@ def player_added(player_count):
     msgFromServer = client.recvfrom(bufferSize) 
     msg = "Message from Server{}".format(msgFromServer[0]) 
     #print(msg)
-
-    if player_count == 2:
-        client.close()
  
 if __name__ == "__main__":
     print("Starting client...")
