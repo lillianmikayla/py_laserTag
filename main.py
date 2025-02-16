@@ -224,13 +224,13 @@ def main():
     dpg.set_primary_window("Splash Window", True)
 
     #splash screen duration
-    splash_duration = 1  # duration in seconds
+    splash_duration = 3  # duration in seconds
     start_time = time.time()
     
     app = PlayerDBApp()
     
     #resets database, adds ID 500 and 501
-    app.flush()
+    #app.flush()
     #app.runTest()
     print("Add players to database via the GUI - can also unncomment the runTest() function to add players to the database directly")
     print("\nEquipment ID is input via the console\n")
