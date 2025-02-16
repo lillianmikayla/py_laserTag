@@ -265,7 +265,5 @@ ID 500, Codename: BhodiLi
 ID 501, Codename: Alpha
 """
 
-
-
 if __name__ == "__main__":
     main()
