@@ -1,4 +1,5 @@
 # Instructions to run
+
 We are using python 3.13.2 (latest release), please ensure you have this version installed!
 
 
@@ -36,6 +37,7 @@ Enter equipment ID of plater 4: 2
 [SERVER] Here is player's equipment number: b'2'  
 ''' 
 # Contributors  
+
 Lillian Morris - lillianmikayla  
 Mary-Claire Ridgeway - mc-ridge  
 Katelynn Adair - faydellee  
