@@ -20,7 +20,7 @@ class PlayerDBApp:
         print("ID for codename 'Alpha':", self.db.get_id_by_codename('Alpha'))
 
         # Close DB connection
-        self.db.close_connection()
+        #self.db.close_connection()
         
     def checkID(self, id):
         #check for ID
@@ -90,8 +90,6 @@ def input_text_callback(sender, app_data, user_data):
         idValue = dpg.get_value(f"greenTable_{user_data[0]}")
     appAcc = user_data[2]
     appAcc.addPlayer(idValue, app_data)
-    
-    
 
 #Callback for swapping network, app_data = IP Address input
 def network_swap_callback(sender, app_data, user_data):
