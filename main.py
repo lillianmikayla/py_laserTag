@@ -5,6 +5,8 @@ import udpserver
 import threading
 from PlayerDatabase import PlayerDatabase
 
+#git pull origin
+
 #player DB class, previously class main in the database main.py test file
 class PlayerDBApp:
     def __init__(self):
@@ -38,8 +40,8 @@ class PlayerDBApp:
 #callback for ID handling, app_data = ID input
 def input_int_callback(sender, app_data, user_data):
     info = str(app_data)
-    print(f"Input from Row {user_data[0]}, Column {user_data[1]}: {info}")
-    print(f"Sender: {sender}")
+    #print(f"Input from Row {user_data[0]}, Column {user_data[1]}: {info}")
+    #print(f"Sender: {sender}")
     
     #invalid theme for handling invalid input scenario
     with dpg.theme() as invalid_theme:
@@ -80,8 +82,8 @@ def input_int_callback(sender, app_data, user_data):
 
 #callback for CODENAME handling, app_data = codename input
 def input_text_callback(sender, app_data, user_data):
-    print(f"Input from Row {user_data[0]}, Column {user_data[1]}: {app_data}")
-    print(f"Sender: {sender}")
+    #print(f"Input from Row {user_data[0]}, Column {user_data[1]}: {app_data}")
+    #print(f"Sender: {sender}")
     
     idValue = None
     if "redTable" in sender:
@@ -93,8 +95,8 @@ def input_text_callback(sender, app_data, user_data):
 
 #Callback for swapping network, app_data = IP Address input
 def network_swap_callback(sender, app_data, user_data):
-    print(f"Input: {app_data}")
-    print(f"Sender: {sender}")
+    #print(f"Input: {app_data}")
+    #print(f"Sender: {sender}")
 
     #further modification to update network address here
     udpclient.change_network(app_data)
@@ -216,8 +218,9 @@ def main():
     start_time = time.time()
     
     app = PlayerDBApp()
-    app.runTest()
-
+    #app.runTest()
+    print("Add players to database via the GUI - can also unncomment the runTest() function to add players to the database directly")
+    
     #first, initial loop - splash screen
     while dpg.is_dearpygui_running():
         current_time = time.time()
