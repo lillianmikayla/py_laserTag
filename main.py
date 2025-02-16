@@ -10,7 +10,7 @@ class PlayerDBApp:
     def __init__(self):
         self.db = PlayerDatabase()  # No need to pass credentials!
 
-    def run(self):
+    def runTest(self):
         # Adding players
         self.db.add_player(500, 'BhodiLi')
         self.db.add_player(501, 'Alpha')
@@ -21,6 +21,19 @@ class PlayerDBApp:
 
         # Close DB connection
         self.db.close_connection()
+        
+    def checkID(self, id):
+        #check for ID
+        IDcheck = self.db.id_exists(id)
+        if IDcheck == None:
+            #add ID, prompt for codename
+            return None
+        else:
+            return IDcheck
+    
+    def addPlayer(self, id, codename):
+        #add player to database
+        self.db.add_player(id, codename)
 
 #callback for ID handling, app_data = ID input
 def input_int_callback(sender, app_data, user_data):
@@ -35,31 +48,50 @@ def input_int_callback(sender, app_data, user_data):
             dpg.add_theme_color(dpg.mvThemeCol_FrameBgHovered, (255, 0, 0), category=dpg.mvThemeCat_Core)  # Red background when hovered
             dpg.add_theme_color(dpg.mvThemeCol_FrameBgActive, (255, 0, 0), category=dpg.mvThemeCat_Core)  # Red background when active
     
-    #enables the codename input box to be edited
-    #further modification to change info or send new codename to database here
-    if (sender == f"redTable_{user_data[0]}") and (app_data > 0):
-        dpg.configure_item(f"redTable_codename_{user_data[0]}", readonly=False)
-        dpg.bind_item_theme(sender, 0)
-    elif (sender == f"greenTable_{user_data[0]}") and (app_data > 0):
-        dpg.configure_item(f"greenTable_codename_{user_data[0]}", readonly=False)
-        dpg.bind_item_theme(sender, 0)
-    else:
-        #invalid input, change theme to red to indicate invalid input
-        #could add further functionality here to send error message to user
+    if app_data <= 0:
         dpg.bind_item_theme(sender, invalid_theme) 
         dpg.set_value(sender, 0) 
-    
-    #userdata is row,col indicies of the cell, appdata is the actual contents
-    #we can use this to send information into the database
-    
-    #might need to update input checking
+        return
+    else:
+        appAcc = user_data[2]
+        check = appAcc.checkID(app_data)
+        if check == None:
+            if (sender == f"redTable_{user_data[0]}"):
+                dpg.configure_item(f"redTable_codename_{user_data[0]}", readonly=False, hint="Enter Codename")
+                dpg.bind_item_theme(sender, 0)
+            elif (sender == f"greenTable_{user_data[0]}"):
+                dpg.configure_item(f"greenTable_codename_{user_data[0]}", readonly=False, hint="Enter Codename")
+                dpg.bind_item_theme(sender, 0)
+            return
+        else:
+            if sender == f"redTable_{user_data[0]}":
+                # Set the codename to the value stored in check
+                dpg.set_value(f"redTable_codename_{user_data[0]}", check)  
+                dpg.bind_item_theme(sender, 0)
+            elif sender == f"greenTable_{user_data[0]}":
+                dpg.set_value(f"greenTable_codename_{user_data[0]}", check) 
+                dpg.bind_item_theme(sender, 0)
+            return
+        
+        #userdata is row,col indicies of the cell, appdata is the actual contents
+        #we can use this to send information into the database
+        
+        #might need to update input checking
 
 #callback for CODENAME handling, app_data = codename input
 def input_text_callback(sender, app_data, user_data):
     print(f"Input from Row {user_data[0]}, Column {user_data[1]}: {app_data}")
     print(f"Sender: {sender}")
     
-    #further modification to send new codename to database here
+    idValue = None
+    if "redTable" in sender:
+        idValue = dpg.get_value(f"redTable_{user_data[0]}")
+    elif "greenTable" in sender:
+        idValue = dpg.get_value(f"greenTable_{user_data[0]}")
+    appAcc = user_data[2]
+    appAcc.addPlayer(idValue, app_data)
+    
+    
 
 #Callback for swapping network, app_data = IP Address input
 def network_swap_callback(sender, app_data, user_data):
@@ -70,7 +102,7 @@ def network_swap_callback(sender, app_data, user_data):
     udpclient.change_network(app_data)
     udpserver.change_network(app_data)
 
-def show_main_window():
+def show_main_window(app):
     dpg.delete_item("Splash Window")
        
     #Red team entry table    
@@ -90,9 +122,9 @@ def show_main_window():
                         if j == 0:
                             dpg.add_text(f"Player {i}")
                         elif j == 1:
-                            dpg.add_input_int(callback=input_int_callback, user_data=(i, j), on_enter=True, parent=row_red_id, step=0, step_fast=0, width = 80, tag=f"redTable_{i}")
+                            dpg.add_input_int(callback=input_int_callback, user_data=(i, j, app), on_enter=True, parent=row_red_id, step=0, step_fast=0, width = 80, tag=f"redTable_{i}")
                         elif j == 2:
-                            dpg.add_input_text(callback=input_text_callback, user_data=(i, j), on_enter=True, parent=row_red_id, hint="Awaiting ID", width = 150, readonly=True, tag=f"redTable_codename_{i}")
+                            dpg.add_input_text(callback=input_text_callback, user_data=(i, j, app), on_enter=True, parent=row_red_id, hint="Awaiting ID", width = 150, readonly=True, tag=f"redTable_codename_{i}")
 
     #Green team entry table
     with dpg.window(tag="GreenTable", pos=(400, 0), width=400, height=400,no_title_bar=True, no_resize=True, no_move=True, no_scrollbar=True) as greenTeam:
@@ -111,9 +143,9 @@ def show_main_window():
                         if j == 0:
                             dpg.add_text(f"Player {i}")
                         elif j == 1:
-                            dpg.add_input_int(callback=input_int_callback, user_data=(i, j), on_enter=True, parent=row_green_id, step=0, step_fast=0, width = 80, tag=f"greenTable_{i}")
+                            dpg.add_input_int(callback=input_int_callback, user_data=(i, j, app), on_enter=True, parent=row_green_id, step=0, step_fast=0, width = 80, tag=f"greenTable_{i}")
                         elif j == 2:
-                            dpg.add_input_text(callback=input_text_callback, user_data=(i, j), on_enter=True, parent=row_green_id, hint="Awaiting ID", width = 150, readonly=True, tag=f"greenTable_codename_{i}")
+                            dpg.add_input_text(callback=input_text_callback, user_data=(i, j, app), on_enter=True, parent=row_green_id, hint="Awaiting ID", width = 150, readonly=True, tag=f"greenTable_codename_{i}")
 
     #Red table theme
     with dpg.theme() as red_theme:
@@ -184,13 +216,16 @@ def main():
     #splash screen duration
     splash_duration = 1  # duration in seconds
     start_time = time.time()
+    
+    app = PlayerDBApp()
+    app.runTest()
 
     #first, initial loop - splash screen
     while dpg.is_dearpygui_running():
         current_time = time.time()
         if current_time - start_time > splash_duration:
             #initialize main window
-            show_main_window()
+            show_main_window(app)
             break
         dpg.render_dearpygui_frame()
         #print("im loop 1\n")
