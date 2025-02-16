@@ -1,0 +1,15 @@
+# Simple input statement.
+connected = True
+while connected:
+    equipmentID = input("Enter equipment ID: ")
+    if equipmentID == DISCONNECT_MESSAGE:
+        bytesToSend = equipmentID.encode(FORMAT)
+        client.sendto(bytesToSend, ADDR)
+        connected = False
+    else:
+        bytesToSend = equipmentID.encode(FORMAT)
+        client.sendto(bytesToSend, ADDR)
+        msgFromServer = client.recvfrom(bufferSize)
+        msg = "Message from Server{}".format(msgFromServer[0])
+        print(msg)
+client.close()
