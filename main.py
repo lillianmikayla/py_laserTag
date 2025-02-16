@@ -206,6 +206,10 @@ def main():
     """
 
 class main:
+    # Start the UDP server in a separate thread
+    server_thread = threading.Thread(target=udpserver.start_server, daemon=True)
+    server_thread.start()
+    
     def __init__(self):
         self.db = PlayerDatabase()  
 
