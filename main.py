@@ -13,6 +13,11 @@ class PlayerDBApp:
         self.db = PlayerDatabase()  # No need to pass credentials!
         self.localPlayerCount = 0
 
+    def flush(self):
+        self.db.clear_database()
+        self.db.add_player(500, 'BhodiLi')
+        self.db.add_player(501, 'Alpha')
+        
     def runTest(self):
         # Adding players
         self.db.add_player(500, 'BhodiLi')
@@ -223,9 +228,12 @@ def main():
     start_time = time.time()
     
     app = PlayerDBApp()
+    
+    #resets database, adds ID 500 and 501
+    app.flush()
     #app.runTest()
     print("Add players to database via the GUI - can also unncomment the runTest() function to add players to the database directly")
-    print("\nEquipment ID is input via the console")
+    print("\nEquipment ID is input via the console\n")
     
     #first, initial loop - splash screen
     while dpg.is_dearpygui_running():
