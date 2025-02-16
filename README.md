@@ -16,11 +16,15 @@ py -m pip install dearpygui
 
 MacOS/Linux (i think): 
 
-python -m ensurepip --upgrade 
+python3 -m ensurepip --upgrade
 
-python -m pip install --upgrade pip 
+python3 -m pip install --upgrade pip
 
-python -m pip install dearpygui 
+python3 -m pip install dearpygui
+
+sudo apt install libpq-dev python3-dev
+
+python3 -m pip install psycopg2
 
 
 
