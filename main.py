@@ -6,12 +6,12 @@ import threading
 from PlayerDatabase import PlayerDatabase
 
 #git pull origin
-playerCount = 0
 
 #player DB class, previously class main in the database main.py test file
 class PlayerDBApp:
     def __init__(self):
         self.db = PlayerDatabase()  # No need to pass credentials!
+        self.localPlayerCount = 0
 
     def runTest(self):
         # Adding players
@@ -32,15 +32,15 @@ class PlayerDBApp:
             #add ID, prompt for codename
             return None
         else:
-            playerCount += 1
-            udpclient.player_added(playerCount)
+            self.localPlayerCount += 1
+            udpclient.player_added(self.localPlayerCount)
             return IDcheck
     
     def addPlayer(self, id, codename):
         #add player to database
         self.db.add_player(id, codename)
-        playerCount += 1
-        udpclient.player_added(playerCount)
+        self.localPlayerCount += 1
+        udpclient.player_added(self.localPlayerCount)
 
 #callback for ID handling, app_data = ID input
 def input_int_callback(sender, app_data, user_data):
