@@ -48,7 +48,7 @@ class PlayerDatabase():
         with self.conn.cursor() as cursor:
             cursor.execute("SELECT codename FROM players WHERE id = %s;", (player_id,))
             result = cursor.fetchone()
-            return result[0] if result else None """returns None if ID isn't taken"""
+            return result[0] if result else None #returns None if ID isn't taken
 
     def print_database(self):
         """ Prints all records in the DB """
