@@ -1,27 +1,51 @@
-# py_laserTag
+# Photon Laser Tag
 
-We are using python 3.13.2 (latest release)
-
-To get started, please install it from the official website. Should be simple.
-Then, in your prefered command line, do the following commands:
-
-Windows:
-
-py -m ensurepip --upgrade 
-
-py -m pip install --upgrade pip 
-
-py -m pip install dearpygui 
+# Instructions to run
+We are using python 3.13.2 (latest release), please ensure you have this version installed!
 
 
-MacOS/Linux (i think): 
+Run these commands to install the dependencies:
+(If pip doesn't work, try pip3)
+$ python3 -m ensurepip --upgrade
+$ python3 -m pip3 install --upgrade pip
+$ python3 -m pip3 install dearpygui
+$ sudo apt install libpq-dev python3-dev
+$ python3 -m pip3 install psycopg2
 
-python -m ensurepip --upgrade 
+To run the program:
+$ python3 main.py
 
-python -m pip install --upgrade pip 
+# Expected output:
+'''
+- Splash screen with "PHOTON" should appear.
+- Red and Green team player information in a table: Player number, ID, and codename.
+- You are able to add two players via the console.
+- An example terminal output:
+"
+[STARTING] Server is starting...
+Add players to database via the GUI - can also uncomment
+the runTest() function to add players to the database directly
 
-python -m pip install dearpygui 
+Equipment ID is input via the console.
+
+Enter equipment ID of player 1: 1
+[SERVER] Here is player's equipment number: b'1'
+Enter equipment ID of plater 2: 6
+[SERVER] Here is player's equipment number: b'6'
+Enter equipment ID of plater 3: 3
+[SERVER] Here is player's equipment number: b'3'
+Enter equipment ID of plater 4: 2
+[SERVER] Here is player's equipment number: b'2'
+"
+'''
+# Contributors
+Lillian Morris - lillianmikayla
+Mary-Claire Ridgeway - mc-ridge
+Katelynn Adair - faydellee
+Sophie Phillips - sophmin05
+Samantha Jackson - samichar
 
 
 
-Once you have this done, if you are wondering "How do I test my files" then my answer is "py/python file.py" (py for windows, python for mac/linux). More files? another system? im just as lost <3
+
+
