@@ -7,9 +7,9 @@ class PlayerDatabase():
         self.conn = psycopg2.connect(
             dbname="photon", 
             user="student", 
-            password="student", 
-            host="localhost",
-            port="5432" #still dk if we need this or not
+            #password="student", 
+            #host="localhost",
+            #port="5432" #still dk if we need this or not
         )
 
     def clear_database(self):
