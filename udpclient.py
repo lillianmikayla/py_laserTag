@@ -19,8 +19,9 @@ def player_added(player_count):
     bytesToSend = equipmentID.encode(FORMAT)
     client.sendto(bytesToSend, ADDR)
 
-    #msgFromServer = client.recvfrom(bufferSize) 
-    #msg = "Message from Server{}".format(msgFromServer[0]) 
+    #the "Hello UDP Client" msg from server to client that somehow breaks the code when I try to remove it???
+    msgFromServer = client.recvfrom(bufferSize) 
+    msg = "Message from Server{}".format(msgFromServer[0]) 
     #print(msg)
 
     if player_count == 2:

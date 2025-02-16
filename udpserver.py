@@ -7,8 +7,8 @@ FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "221" 
 buffersize = 1024
 
-#msgFromServer = "Hello UDP Client."
-#bytesToSend = str.encode(msgFromServer)
+msgFromServer = "Hello UDP Client."
+bytesToSend = str.encode(msgFromServer)
 
 server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # Create a socket.
 
@@ -32,10 +32,10 @@ def start_server():
             else:
                 clientMsg = "Here is player's equipment number: {}\n".format(message)
                 print(clientMsg)
-                #server.sendto(bytesToSend, address)
+                server.sendto(bytesToSend, address)
 
             if connected:
-                message = server.recvfrom(buffersize) # Receive message from client.
+                message, address = server.recvfrom(buffersize) # Receive message from client.
 
 if __name__ == "__main__":
     start_server()
