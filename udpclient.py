@@ -14,31 +14,27 @@ def change_network(new_ip):
     ADDR = (new_ip, localPort) # Update the address with the new IP.
     print(f"Client network changed to IP: {new_ip}, Port: {localPort}")
 
-def player_added():
+def player_added(player_count):
     connected = True
     while connected:
-        cnt = 0
-        while cnt < 2:
-            equipmentID = input(f"Enter equipment ID of green player {cnt + 1}: ") # Collect equipment ID from user.
-            if equipmentID == DISCONNECT_MESSAGE: # If input = 221, disconnect.
-                bytesToSend = equipmentID.encode(FORMAT) 
-                client.sendto(bytesToSend, ADDR) 
-                connected = False # Break the loop.
-                break
+        equipmentID = input(f"Enter equipment ID of player {player_count + 1}: ") # Collect equipment ID from user.
+        if equipmentID == DISCONNECT_MESSAGE: # If input = 221, disconnect.
+            bytesToSend = equipmentID.encode(FORMAT) 
+            client.sendto(bytesToSend, ADDR) 
+            connected = False # Break the loop.
+            break
             
-            else: # If input is not 221, send the equipment ID to the server.
-                bytesToSend = equipmentID.encode(FORMAT)
-                client.sendto(bytesToSend, ADDR)
+        else: # If input is not 221, send the equipment ID to the server.
+            bytesToSend = equipmentID.encode(FORMAT)
+            client.sendto(bytesToSend, ADDR)
 
-                msgFromServer = client.recvfrom(bufferSize) 
-                msg = "Message from Server{}".format(msgFromServer[0]) 
-                print(msg)
-
-                cnt += 1 # Increment.
+            msgFromServer = client.recvfrom(bufferSize) 
+            msg = "Message from Server{}".format(msgFromServer[0]) 
+            print(msg)
             
-            if cnt == 2: # If cnt = 2, break the loop.
-                connected = False
-        client.close() # Close the client.
+        if player_count == 2: # If player_count = 2, break the loop.
+            connected = False
+    client.close() # Close the client.
 
 if __name__ == "__main__":
     print("Starting client...")

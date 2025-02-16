@@ -12,6 +12,7 @@ class PlayerDatabase():
             #host="localhost"
             #port="5432" still dk if we need this or not
         )
+        self.player_count = 0
 
     def clear_database(self):
         """ Deletes all records from the players table 
@@ -27,7 +28,8 @@ class PlayerDatabase():
                 INSERT INTO players (id, codename) VALUES (%s, %s);
             ''', (player_id, codename))
         self.conn.commit()
-        udpclient.player_added()  # Call the function to add player
+        self.player_count += 1
+        udpclient.player_added(self.player_count)  # Call the function to add player
 
     def get_codename_by_id(self, player_id):
         with self.conn.cursor() as cursor:
