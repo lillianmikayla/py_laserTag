@@ -9,7 +9,7 @@ class PlayerDatabase():
             user="student", 
             password="student", 
             host="localhost"
-            #port="5432" still dk if we need this or not
+            port="5432" still dk if we need this or not
         )
 
     def clear_database(self):
