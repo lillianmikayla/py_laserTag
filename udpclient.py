@@ -16,19 +16,12 @@ def change_network(new_ip):
 
 def player_added(player_count):
     equipmentID = input(f"Enter equipment ID of player {player_count}: ") # Collect equipment ID from user
+    bytesToSend = equipmentID.encode(FORMAT)
+    client.sendto(bytesToSend, ADDR)
 
-    if equipmentID == DISCONNECT_MESSAGE: # If input = 221, disconnect.
-            bytesToSend = equipmentID.encode(FORMAT) 
-            client.sendto(bytesToSend, ADDR) 
-            client.close()
-
-    else:
-        bytesToSend = equipmentID.encode(FORMAT)
-        client.sendto(bytesToSend, ADDR)
-
-        msgFromServer = client.recvfrom(bufferSize) 
-        msg = "Message from Server{}".format(msgFromServer[0]) 
-        print(msg)
+    #msgFromServer = client.recvfrom(bufferSize) 
+    #msg = "Message from Server{}".format(msgFromServer[0]) 
+    #print(msg)
 
     if player_count == 2:
         client.close()
@@ -61,7 +54,7 @@ if __name__ == "__main__":
     print("Starting client...")
     
 
-# # Simple input statement.
+# # Simple input statement for old logic
 # connected = True
 # while connected:
 #     equipmentID = input("Enter equipment ID: ")
