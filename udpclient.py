@@ -16,6 +16,12 @@ def change_network(new_ip):
 
 def player_added(player_count):
     equipmentID = input(f"Enter equipment ID of player {player_count}: ") # Collect equipment ID from user
+
+    if equipmentID == DISCONNECT_MESSAGE: # If input = 221, disconnect.
+            bytesToSend = equipmentID.encode(FORMAT) 
+            client.sendto(bytesToSend, ADDR) 
+            client.close()
+
     bytesToSend = equipmentID.encode(FORMAT)
     client.sendto(bytesToSend, ADDR)
 
