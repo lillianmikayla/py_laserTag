@@ -30,7 +30,7 @@ def start_server():
                 clientMsg = "Player has disconnected.".format(message)
                 print(clientMsg)
             else:
-                clientMsg = "Here is player's equipment number: {}\n".format(message)
+                clientMsg = "[SERVER] Here is player's equipment number: {}".format(message)
                 print(clientMsg)
                 server.sendto(bytesToSend, address)
 
