@@ -2,7 +2,7 @@ import socket
 
 bufferSize = 1024
 localIP = "127.0.0.1"
-localPort = 7501
+localPort = 7502
 ADDR = (localIP, localPort)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "221"
@@ -12,7 +12,7 @@ client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # Create a socket.
 def change_network(new_ip):
     global ADDR
     ADDR = (new_ip, localPort) # Update the address with the new IP.
-    print(f"Network changed to IP: {new_ip}, Port: {localPort}")
+    print(f"Client network changed to IP: {new_ip}, Port: {localPort}")
 
 def player_added():
     connected = True
@@ -38,8 +38,10 @@ def player_added():
             
             if cnt == 2: # If cnt = 2, break the loop.
                 connected = False
+        client.close() # Close the client.
 
-client.close() # Close the client.
+if __name__ == "__main__":
+    print("Starting client...")
     
 
 # # Simple input statement.
