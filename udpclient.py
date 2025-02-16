@@ -22,12 +22,13 @@ def player_added(player_count):
             client.sendto(bytesToSend, ADDR) 
             client.close()
 
-    bytesToSend = equipmentID.encode(FORMAT)
-    client.sendto(bytesToSend, ADDR)
+    else:
+        bytesToSend = equipmentID.encode(FORMAT)
+        client.sendto(bytesToSend, ADDR)
 
-    msgFromServer = client.recvfrom(bufferSize) 
-    msg = "Message from Server{}".format(msgFromServer[0]) 
-    print(msg)
+        msgFromServer = client.recvfrom(bufferSize) 
+        msg = "Message from Server{}".format(msgFromServer[0]) 
+        print(msg)
 
     if player_count == 2:
         client.close()
