@@ -29,7 +29,6 @@ class PlayerDatabase():
             ''', (player_id, codename))
         self.conn.commit()
         self.player_count += 1
-        udpclient.player_added(self.player_count)  # Call the function to add player
 
     def get_codename_by_id(self, player_id):
         with self.conn.cursor() as cursor:

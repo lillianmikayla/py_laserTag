@@ -6,6 +6,7 @@ import threading
 from PlayerDatabase import PlayerDatabase
 
 #git pull origin
+playerCount = 0
 
 #player DB class, previously class main in the database main.py test file
 class PlayerDBApp:
@@ -31,11 +32,15 @@ class PlayerDBApp:
             #add ID, prompt for codename
             return None
         else:
+            playerCount += 1
+            udpclient.player_added(playerCount)
             return IDcheck
     
     def addPlayer(self, id, codename):
         #add player to database
         self.db.add_player(id, codename)
+        playerCount += 1
+        udpclient.player_added(playerCount)
 
 #callback for ID handling, app_data = ID input
 def input_int_callback(sender, app_data, user_data):
@@ -220,6 +225,7 @@ def main():
     app = PlayerDBApp()
     #app.runTest()
     print("Add players to database via the GUI - can also unncomment the runTest() function to add players to the database directly")
+    print("\nEquipment ID is input via the console")
     
     #first, initial loop - splash screen
     while dpg.is_dearpygui_running():
