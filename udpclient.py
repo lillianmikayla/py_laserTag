@@ -2,7 +2,7 @@ import socket
 
 bufferSize = 1024
 localIP = "127.0.0.1"
-localPort = 7502
+localPort = 7500
 ADDR = (localIP, localPort)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "221"
