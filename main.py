@@ -76,14 +76,14 @@ class fakeDatabase:
             return None
         else:
             self.localPlayerCount += 1
-            udpclient.player_added(self.localPlayerCount)
+            #udpclient.player_added(self.localPlayerCount)
             return IDcheck
     
     def addPlayer(self, id, codename):
         #add player to database
         self.fakeDatabase[id] = codename
         self.localPlayerCount += 1
-        udpclient.player_added(self.localPlayerCount)
+        #udpclient.player_added(self.localPlayerCount)
 
 #callback for ID handling, app_data = ID input
 def input_int_callback(sender, app_data, user_data):
@@ -108,18 +108,22 @@ def input_int_callback(sender, app_data, user_data):
         if check == None:
             if (sender == f"redTable_{user_data[0]}"):
                 dpg.configure_item(f"redTable_codename_{user_data[0]}", readonly=False, hint="Enter Codename")
+                dpg.configure_item(f"redTable_equipment_{user_data[0]}", readonly=False)
                 dpg.bind_item_theme(sender, 0)
             elif (sender == f"greenTable_{user_data[0]}"):
                 dpg.configure_item(f"greenTable_codename_{user_data[0]}", readonly=False, hint="Enter Codename")
+                dpg.configure_item(f"greenTable_equipment_{user_data[0]}", readonly=False)
                 dpg.bind_item_theme(sender, 0)
             return
         else:
             if sender == f"redTable_{user_data[0]}":
                 # Set the codename to the value stored in check
-                dpg.set_value(f"redTable_codename_{user_data[0]}", check)  
+                dpg.set_value(f"redTable_codename_{user_data[0]}", check)
+                dpg.configure_item(f"redTable_equipment_{user_data[0]}", readonly=False)
                 dpg.bind_item_theme(sender, 0)
             elif sender == f"greenTable_{user_data[0]}":
-                dpg.set_value(f"greenTable_codename_{user_data[0]}", check) 
+                dpg.set_value(f"greenTable_codename_{user_data[0]}", check)
+                dpg.configure_item(f"greenTable_equipment_{user_data[0]}", readonly=False) 
                 dpg.bind_item_theme(sender, 0)
             return
         
@@ -140,6 +144,10 @@ def input_text_callback(sender, app_data, user_data):
         idValue = dpg.get_value(f"greenTable_{user_data[0]}")
     appAcc = user_data[2]
     appAcc.addPlayer(idValue, app_data)
+    
+def input_equipID_callback(sender, app_data, user_data):
+    #callback for equipment ID input
+    udpclient.player_added(app_data)
 
 #Callback for swapping network, app_data = IP Address input
 def network_swap_callback(sender, app_data, user_data):
@@ -154,7 +162,7 @@ def show_main_window(app):
     dpg.delete_item("Splash Window")
        
     #Red team entry table    
-    with dpg.window(tag="RedTable", pos=(0, 0), width=400, height=400,no_title_bar=True, no_resize=True, no_move=True, no_scrollbar=True) as redTeam:
+    with dpg.window(tag="RedTable", pos=(0, 0), width=450, height=400,no_title_bar=True, no_resize=True, no_move=True, no_scrollbar=True) as redTeam:
         dpg.add_text("Red Team", parent=redTeam)
         with dpg.table(header_row=True, label = "Red Team") as table_red_id:
 
@@ -162,20 +170,23 @@ def show_main_window(app):
             # table columns use child slot 0
             dpg.add_table_column(label = "Player Number", width_fixed=True,width=100)
             dpg.add_table_column(label = "Player ID", width_fixed=True,width=80)
-            dpg.add_table_column(label = "Player Codename")
+            dpg.add_table_column(label = "Player Codename", width_fixed=True,width=180)
+            dpg.add_table_column(label = "Equip. ID", width_fixed=True,width=80)
 
             for i in range(13):
                 with dpg.table_row(parent=table_red_id) as row_red_id:
-                    for j in range(3):
+                    for j in range(4):
                         if j == 0:
                             dpg.add_text(f"Player {i}")
                         elif j == 1:
                             dpg.add_input_int(callback=input_int_callback, user_data=(i, j, app), on_enter=True, parent=row_red_id, step=0, step_fast=0, width = 80, tag=f"redTable_{i}")
                         elif j == 2:
                             dpg.add_input_text(callback=input_text_callback, user_data=(i, j, app), on_enter=True, parent=row_red_id, hint="Awaiting ID", width = 150, readonly=True, tag=f"redTable_codename_{i}")
+                        elif j == 3:
+                            dpg.add_input_int(callback=input_equipID_callback, user_data=(i, j, app), on_enter=True, parent=row_red_id, step=0, step_fast=0, readonly=True, width = 80, tag=f"redTable_equipment_{i}")
 
     #Green team entry table
-    with dpg.window(tag="GreenTable", pos=(400, 0), width=400, height=400,no_title_bar=True, no_resize=True, no_move=True, no_scrollbar=True) as greenTeam:
+    with dpg.window(tag="GreenTable", pos=(450, 0), width=450, height=400,no_title_bar=True, no_resize=True, no_move=True, no_scrollbar=True) as greenTeam:
         dpg.add_text("Green Team", parent=greenTeam)
         with dpg.table(header_row=True, label = "Green Team") as table_green_id:
 
@@ -183,17 +194,20 @@ def show_main_window(app):
             # table columns use child slot 0
             dpg.add_table_column(label = "Player Number", width_fixed=True,width=100)
             dpg.add_table_column(label = "Player ID", width_fixed=True,width=80)
-            dpg.add_table_column(label = "Player Codename")
+            dpg.add_table_column(label = "Player Codename", width_fixed=True,width=180)
+            dpg.add_table_column(label = "Equip. ID", width_fixed=True,width=80)
 
             for i in range(13):
                 with dpg.table_row(parent=table_green_id) as row_green_id:
-                    for j in range(3):
+                    for j in range(4):
                         if j == 0:
                             dpg.add_text(f"Player {i}")
                         elif j == 1:
                             dpg.add_input_int(callback=input_int_callback, user_data=(i, j, app), on_enter=True, parent=row_green_id, step=0, step_fast=0, width = 80, tag=f"greenTable_{i}")
                         elif j == 2:
                             dpg.add_input_text(callback=input_text_callback, user_data=(i, j, app), on_enter=True, parent=row_green_id, hint="Awaiting ID", width = 150, readonly=True, tag=f"greenTable_codename_{i}")
+                        elif j == 3:
+                            dpg.add_input_int(callback=input_equipID_callback, user_data=(i, j, app), on_enter=True, parent=row_green_id, step=0, step_fast=0, readonly=True, width = 80, tag=f"greenTable_equipment_{i}")
 
     #Red table theme
     with dpg.theme() as red_theme:
@@ -232,9 +246,9 @@ def show_main_window(app):
         #add button to close window, and handling for failed IP address swap
     
     #Base window for bottom buttons
-    with dpg.window(tag="Button Set", pos=(0, 400), width=800, height=200,no_title_bar=True, no_resize=True, no_move=True, no_scrollbar=True) as buttonSet:
+    with dpg.window(tag="Button Set", pos=(0, 400), width=900, height=200,no_title_bar=True, no_resize=True, no_move=True, no_scrollbar=True) as buttonSet:
         #button to switch network
-        dpg.add_button(label="Switch UDP\n Network", width=100, height=100, indent=350, callback=lambda: dpg.configure_item("modal_id", show=True))
+        dpg.add_button(label="Switch UDP\n Network", width=100, height=100, indent=400, callback=lambda: dpg.configure_item("modal_id", show=True))
         
     dpg.show_item("RedTable")
     dpg.show_item("GreenTable")
@@ -246,7 +260,7 @@ def main():
 
     #init graphics
     dpg.create_context()
-    dpg.create_viewport(title='Laser Tag', width=800, height=600)
+    dpg.create_viewport(title='Laser Tag', width=910, height=610)
 
     #splash image
     with dpg.texture_registry():
@@ -254,7 +268,7 @@ def main():
         dpg.add_static_texture(width, height, data, tag="splash_image")
 
     with dpg.window(tag="Splash Window", no_title_bar=True, no_resize=True, no_move=True, no_scrollbar=True):
-        dpg.add_image("splash_image", width=800, height=600)
+        dpg.add_image("splash_image", width=900, height=600)
 
     #finish graphics set up
     dpg.setup_dearpygui()
@@ -271,8 +285,8 @@ def main():
     #resets database, adds ID 500 and 501
     #app.flush()
     #app.runTest()
-    print("Add players to database via the GUI - can also unncomment the runTest() function to add players to the database directly")
-    print("\nEquipment ID is input via the console\n")
+    #print("Add players to database via the GUI - can also unncomment the runTest() function to add players to the database directly")
+    #print("\nEquipment ID is input via the console\n")
     
     #first, initial loop - splash screen
     while dpg.is_dearpygui_running():
