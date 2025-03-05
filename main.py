@@ -224,11 +224,20 @@ def show_main_window(app):
     
     #Base window for bottom buttons
     with dpg.window(tag="Button Set", pos=(0, 400), width=900, height=200,no_title_bar=True, no_resize=True, no_move=True, no_scrollbar=True) as buttonSet:
-        #button to switch network
-        dpg.add_button(label="Switch UDP\n Network", width=100, height=100, indent=400, callback=lambda: dpg.configure_item("modal_id", show=True))
+        with dpg.group(horizontal=True): 
+            #indent determines spacing, callback determines function or pop up to call when button is pressed
+            dpg.add_button(label="Switch UDP\n Network", width=100, height=100, indent=200, callback=lambda: dpg.configure_item("modal_id", show=True))
+            dpg.add_button(label="Start", width=100, height=100, indent=400, callback=start_game())
+            dpg.add_button(label="Clear", width=100, height=100, indent=600, callback=clear_entries())
         
     dpg.show_item("RedTable")
     dpg.show_item("GreenTable")
+
+def clear_entries():
+    pass
+
+def start_game():
+    pass
 
 def main():
     # Start the UDP server in a separate thread
