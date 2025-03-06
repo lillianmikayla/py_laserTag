@@ -143,16 +143,16 @@ def input_codename_callback(sender, app_data, user_data):
     idValue = None
     if "redTable" in sender:
         idValue = dpg.get_value(f"redTable_{user_data[0]}")
-        player_codenames["red"][user_data[0]] = app_data
-        player_scores["red"][user_data[0]] = 0 
+        player_codenames["red"][user_data[0]] = app_data # store red codename in dictionary
+        player_scores["red"][user_data[0]] = 0  # store red score in dictionary
     elif "greenTable" in sender:
         idValue = dpg.get_value(f"greenTable_{user_data[0]}")
-        player_codenames["green"][user_data[0]] = app_data
+        player_codenames["green"][user_data[0]] = app_data 
         player_scores["green"][user_data[0]] = 0
     appAcc = user_data[2]
     appAcc.addPlayer(idValue, app_data)
     
-def input_equipID_callback(sender, app_data, user_data): #commented out while testing 
+def input_equipID_callback(sender, app_data, user_data): 
     equipment_id_str = str(app_data)
     udpclient.inputEquipID(equipment_id_str)
 
@@ -252,7 +252,7 @@ def show_main_window(app):
     # Play action screen window (initially hidden)
     with dpg.window(label="Play Action Screen", pos=(0, 0), width=900, height=600, show=False, tag="PlayActionScreen", no_resize=True, no_move=True):
 
-        # Red and green team scores
+        # Red and green team scores windows
         with dpg.group(horizontal=True):
             with dpg.child_window(width=435, height=410, tag="RedTeamScores"):
                 dpg.add_text("Red Team Scores")
@@ -264,7 +264,7 @@ def show_main_window(app):
         with dpg.child_window(width=880, height=100):
             dpg.add_text("Current Game Action")
 
-        # Game Timer logic - 6 minutes per game, 1 time 30 second start down
+        # Game Timer window - 6 minutes per game, one time 30 second start down 
         with dpg.child_window(width=880, height=40):
             dpg.add_text("Game Timer")
 
@@ -273,18 +273,26 @@ def start_game():
     # Show the play action screen window, code for it should be directly above this function
     dpg.configure_item("PlayActionScreen", show=True)
 
-    # Display the player codenames on the play action screen
-    for i, codename in player_codenames["red"].items():
-        with dpg.group(horizontal=True, parent="RedTeamScores"):
-            dpg.add_text(f"{codename}")
-            dpg.add_spacer(width=350)  # Adjust the width as needed
-            dpg.add_text(f"{player_scores['red'][i]}")
+    # Display the player codenames and scores on the play action screen using tables
+    with dpg.table(header_row=False, parent="RedTeamScores"):
+        dpg.add_table_column()
+        dpg.add_table_column()
+        dpg.add_table_column()
+        for i, codename in player_codenames["red"].items(): # Iterate through the red team player_codenames dictionary
+            with dpg.table_row():
+                dpg.add_text(f"{codename}") # Display the codename
+                dpg.add_spacer() # spacer column 
+                dpg.add_text(f"{player_scores['red'][i]}") # Display the score using player_scores dictionary
 
-    for i, codename in player_codenames["green"].items():
-        with dpg.group(horizontal=True, parent="GreenTeamScores"):
-            dpg.add_text(f"{codename}")
-            dpg.add_spacer(width=350)  # Adjust the width as needed
-            dpg.add_text(f"{player_scores['green'][i]}")
+    with dpg.table(header_row=False, parent="GreenTeamScores"):
+        dpg.add_table_column()
+        dpg.add_table_column()
+        dpg.add_table_column()
+        for i, codename in player_codenames["green"].items():
+            with dpg.table_row():
+                dpg.add_text(f"{codename}")
+                dpg.add_spacer()
+                dpg.add_text(f"{player_scores['green'][i]}")
 
     # Calculate and display the total scores
     total_red_score = sum(player_scores["red"].values())
@@ -292,11 +300,11 @@ def start_game():
 
     # Add spacer to move the total score to the bottom right
     with dpg.group(horizontal=True, parent="RedTeamScores"):
-        dpg.add_spacer(width=300)  
+        dpg.add_spacer(width=250)  
         dpg.add_text(f"Total Score: {total_red_score}", tag="RedTeamTotalScore")
 
     with dpg.group(horizontal=True, parent="GreenTeamScores"):
-        dpg.add_spacer(width=300)  
+        dpg.add_spacer(width=250)  
         dpg.add_text(f"Total Score: {total_green_score}", tag="GreenTeamTotalScore")
 
 
