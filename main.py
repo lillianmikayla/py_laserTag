@@ -309,8 +309,19 @@ def start_game():
         dpg.add_text(f"Total Score: {total_green_score}", tag="GreenTeamTotalScore")
 
 
+
 def clear_entries():
-    pass
+    for i in range(15):
+        # Clear red team 
+        dpg.set_value(f"redTable_{i}", 0)
+        dpg.set_value(f"redTable_codename_{i}", "")
+        dpg.set_value(f"redTable_equipment_{i}", 0)
+
+        # Clear green team
+        dpg.set_value(f"greenTable_{i}", 0)
+        dpg.set_value(f"greenTable_codename_{i}", "")
+        dpg.set_value(f"greenTable_equipment_{i}", 0)
+
 
 def main():
     # Start the UDP server in a separate thread
