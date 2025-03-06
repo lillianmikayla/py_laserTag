@@ -227,16 +227,33 @@ def show_main_window(app):
         with dpg.group(horizontal=True): 
             #indent determines spacing, callback determines function or pop up to call when button is pressed
             dpg.add_button(label="Switch UDP\n Network", width=100, height=100, indent=200, callback=lambda: dpg.configure_item("modal_id", show=True))
-            dpg.add_button(label="Start", width=100, height=100, indent=400, callback=start_game())
+            dpg.add_button(label="Start", width=100, height=100, indent=400, callback=lambda: dpg.configure_item("PlayActionScreen", show=True))
             dpg.add_button(label="Clear", width=100, height=100, indent=600, callback=clear_entries())
         
     dpg.show_item("RedTable")
     dpg.show_item("GreenTable")
 
-def clear_entries():
-    pass
+    # Play action screen window (initially hidden)
+    with dpg.window(label="Play Action Screen", pos=(0, 0), width=900, height=600, show=False, tag="PlayActionScreen", no_resize=True, no_move=True):
 
-def start_game():
+        # Red and green team scores
+        with dpg.group(horizontal=True):
+            with dpg.child_window(width=435, height=300):
+                dpg.add_text("Red Team Scores")
+
+            with dpg.child_window(width=435, height=300):
+                dpg.add_text("Green Team Scores")
+
+        # Add a new child window for current game action
+        with dpg.child_window(width=880, height=200):
+            dpg.add_text("Current Game Action")
+
+        # Game Timer logic - 6 minutes per game, 1 time 30 second start down
+        with dpg.child_window(width=880, height=50):
+            dpg.add_text("Game Timer")
+
+
+def clear_entries():
     pass
 
 def main():
