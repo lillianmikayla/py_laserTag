@@ -254,18 +254,19 @@ def show_main_window(app):
 
         # Red and green team scores windows
         with dpg.group(horizontal=True):
-            with dpg.child_window(width=435, height=410, tag="RedTeamScores"):
+            with dpg.child_window(width=288, height=500, tag="RedTeamScores"):
                 dpg.add_text("Red Team Scores")
 
-            with dpg.child_window(width=435, height=410, tag="GreenTeamScores"):
+            # Add a new child window for current game action
+            with dpg.child_window(width=288, height=500):
+                dpg.add_text("Current Game Action")
+
+            with dpg.child_window(width=288, height=500, tag="GreenTeamScores"):
                 dpg.add_text("Green Team Scores")
 
-        # Add a new child window for current game action
-        with dpg.child_window(width=880, height=100):
-            dpg.add_text("Current Game Action")
 
         # Game Timer window - 6 minutes per game, one time 30 second start down 
-        with dpg.child_window(width=880, height=40):
+        with dpg.child_window(width=880, height=60):
             dpg.add_text("Game Timer")
 
 
@@ -300,11 +301,11 @@ def start_game():
 
     # Add spacer to move the total score to the bottom right
     with dpg.group(horizontal=True, parent="RedTeamScores"):
-        dpg.add_spacer(width=250)  
+        dpg.add_spacer(width=130)  
         dpg.add_text(f"Total Score: {total_red_score}", tag="RedTeamTotalScore")
 
     with dpg.group(horizontal=True, parent="GreenTeamScores"):
-        dpg.add_spacer(width=250)  
+        dpg.add_spacer(width=130)  
         dpg.add_text(f"Total Score: {total_green_score}", tag="GreenTeamTotalScore")
 
 
