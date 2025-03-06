@@ -322,6 +322,13 @@ def clear_entries():
         dpg.set_value(f"greenTable_codename_{i}", "")
         dpg.set_value(f"greenTable_equipment_{i}", 0)
 
+    # Clear player codenames and scores
+    player_codenames["red"].clear()
+    player_codenames["green"].clear()
+    player_scores["red"].clear()
+    player_scores["green"].clear()
+    
+
 
 def main():
     # Start the UDP server in a separate thread
