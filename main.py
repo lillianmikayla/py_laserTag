@@ -89,6 +89,17 @@ class fakeDatabase:
 
 #callback section: sender = table cell ID, app_data = value in cell, user_data = tuple of (row, column, app)
 
+#dictionary to store player codenames, used to display on play action screen
+player_codenames = {
+    "red": {},
+    "green": {}
+}
+
+player_scores= {
+    "red": {},
+    "green": {}
+}
+
 def input_id_callback(sender, app_data, user_data):
     #invalid theme for handling invalid input scenario
     with dpg.theme() as invalid_theme:
@@ -132,13 +143,18 @@ def input_codename_callback(sender, app_data, user_data):
     idValue = None
     if "redTable" in sender:
         idValue = dpg.get_value(f"redTable_{user_data[0]}")
+        player_codenames["red"][user_data[0]] = app_data
+        player_scores["red"][user_data[0]] = 0 
     elif "greenTable" in sender:
         idValue = dpg.get_value(f"greenTable_{user_data[0]}")
+        player_codenames["green"][user_data[0]] = app_data
+        player_scores["green"][user_data[0]] = 0
     appAcc = user_data[2]
     appAcc.addPlayer(idValue, app_data)
     
-def input_equipID_callback(sender, app_data, user_data):
-    udpclient.player_added(app_data)
+def input_equipID_callback(sender, app_data, user_data): #commented out while testing 
+    equipment_id_str = str(app_data)
+    udpclient.inputEquipID(equipment_id_str)
 
 def network_swap_callback(sender, app_data, user_data):
     #further modification to handle bad IP needed (?)
@@ -149,7 +165,7 @@ def show_main_window(app):
     dpg.delete_item("Splash Window")
        
     #Red team entry table    
-    with dpg.window(tag="RedTable", pos=(0, 0), width=450, height=400,no_title_bar=True, no_resize=True, no_move=True, no_scrollbar=True) as redTeam:
+    with dpg.window(tag="RedTable", pos=(0, 0), width=450, height=410,no_title_bar=True, no_resize=True, no_move=True, no_scrollbar=True) as redTeam:
         dpg.add_text("Red Team", parent=redTeam)
         with dpg.table(header_row=True, label = "Red Team") as table_red_id:
             dpg.add_table_column(label = "Player Number", width_fixed=True,width=100)
@@ -157,11 +173,11 @@ def show_main_window(app):
             dpg.add_table_column(label = "Player Codename", width_fixed=True,width=180)
             dpg.add_table_column(label = "Equip. ID", width_fixed=True,width=80)
 
-            for i in range(13):
+            for i in range(15):
                 with dpg.table_row(parent=table_red_id) as row_red_id:
                     for j in range(4):
                         if j == 0:
-                            dpg.add_text(f"Player {i}")
+                            dpg.add_text(f"Player {i + 1}")
                         elif j == 1:
                             dpg.add_input_int(callback=input_id_callback, user_data=(i, j, app), on_enter=True, parent=row_red_id, step=0, step_fast=0, width = 80, tag=f"redTable_{i}")
                         elif j == 2:
@@ -170,7 +186,7 @@ def show_main_window(app):
                             dpg.add_input_int(callback=input_equipID_callback, user_data=(i, j, app), on_enter=True, parent=row_red_id, step=0, step_fast=0, readonly=True, width = 80, tag=f"redTable_equipment_{i}")
 
     #Green team entry table
-    with dpg.window(tag="GreenTable", pos=(450, 0), width=450, height=400,no_title_bar=True, no_resize=True, no_move=True, no_scrollbar=True) as greenTeam:
+    with dpg.window(tag="GreenTable", pos=(450, 0), width=450, height=410,no_title_bar=True, no_resize=True, no_move=True, no_scrollbar=True) as greenTeam:
         dpg.add_text("Green Team", parent=greenTeam)
         with dpg.table(header_row=True, label = "Green Team") as table_green_id:
             dpg.add_table_column(label = "Player Number", width_fixed=True,width=100)
@@ -178,11 +194,11 @@ def show_main_window(app):
             dpg.add_table_column(label = "Player Codename", width_fixed=True,width=180)
             dpg.add_table_column(label = "Equip. ID", width_fixed=True,width=80)
 
-            for i in range(13):
+            for i in range(15):
                 with dpg.table_row(parent=table_green_id) as row_green_id:
                     for j in range(4):
                         if j == 0:
-                            dpg.add_text(f"Player {i}")
+                            dpg.add_text(f"Player {i + 1}")
                         elif j == 1:
                             dpg.add_input_int(callback=input_id_callback, user_data=(i, j, app), on_enter=True, parent=row_green_id, step=0, step_fast=0, width = 80, tag=f"greenTable_{i}")
                         elif j == 2:
@@ -223,12 +239,12 @@ def show_main_window(app):
         #add button to close window, and handling for failed IP address swap
     
     #Base window for bottom buttons
-    with dpg.window(tag="Button Set", pos=(0, 400), width=900, height=200,no_title_bar=True, no_resize=True, no_move=True, no_scrollbar=True) as buttonSet:
+    with dpg.window(tag="Button Set", pos=(0, 410), width=900, height=200,no_title_bar=True, no_resize=True, no_move=True, no_scrollbar=True) as buttonSet:
         with dpg.group(horizontal=True): 
             #indent determines spacing, callback determines function or pop up to call when button is pressed
             dpg.add_button(label="Switch UDP\n Network", width=100, height=100, indent=200, callback=lambda: dpg.configure_item("modal_id", show=True))
-            dpg.add_button(label="Start", width=100, height=100, indent=400, callback=lambda: dpg.configure_item("PlayActionScreen", show=True))
-            dpg.add_button(label="Clear", width=100, height=100, indent=600, callback=clear_entries())
+            dpg.add_button(label="Start", width=100, height=100, indent=400, callback=start_game)
+            dpg.add_button(label="Clear", width=100, height=100, indent=600, callback=clear_entries)
         
     dpg.show_item("RedTable")
     dpg.show_item("GreenTable")
@@ -238,19 +254,50 @@ def show_main_window(app):
 
         # Red and green team scores
         with dpg.group(horizontal=True):
-            with dpg.child_window(width=435, height=300):
+            with dpg.child_window(width=435, height=410, tag="RedTeamScores"):
                 dpg.add_text("Red Team Scores")
 
-            with dpg.child_window(width=435, height=300):
+            with dpg.child_window(width=435, height=410, tag="GreenTeamScores"):
                 dpg.add_text("Green Team Scores")
 
         # Add a new child window for current game action
-        with dpg.child_window(width=880, height=200):
+        with dpg.child_window(width=880, height=100):
             dpg.add_text("Current Game Action")
 
         # Game Timer logic - 6 minutes per game, 1 time 30 second start down
-        with dpg.child_window(width=880, height=50):
+        with dpg.child_window(width=880, height=40):
             dpg.add_text("Game Timer")
+
+
+def start_game():
+    # Show the play action screen window, code for it should be directly above this function
+    dpg.configure_item("PlayActionScreen", show=True)
+
+    # Display the player codenames on the play action screen
+    for i, codename in player_codenames["red"].items():
+        with dpg.group(horizontal=True, parent="RedTeamScores"):
+            dpg.add_text(f"{codename}")
+            dpg.add_spacer(width=350)  # Adjust the width as needed
+            dpg.add_text(f"{player_scores['red'][i]}")
+
+    for i, codename in player_codenames["green"].items():
+        with dpg.group(horizontal=True, parent="GreenTeamScores"):
+            dpg.add_text(f"{codename}")
+            dpg.add_spacer(width=350)  # Adjust the width as needed
+            dpg.add_text(f"{player_scores['green'][i]}")
+
+    # Calculate and display the total scores
+    total_red_score = sum(player_scores["red"].values())
+    total_green_score = sum(player_scores["green"].values())
+
+    # Add spacer to move the total score to the bottom right
+    with dpg.group(horizontal=True, parent="RedTeamScores"):
+        dpg.add_spacer(width=300)  
+        dpg.add_text(f"Total Score: {total_red_score}", tag="RedTeamTotalScore")
+
+    with dpg.group(horizontal=True, parent="GreenTeamScores"):
+        dpg.add_spacer(width=300)  
+        dpg.add_text(f"Total Score: {total_green_score}", tag="GreenTeamTotalScore")
 
 
 def clear_entries():
