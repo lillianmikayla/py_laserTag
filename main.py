@@ -3,6 +3,11 @@ import time
 import udpclient
 import udpserver
 import threading
+
+from PIL import Image, ImageTk
+import tkinter as tk
+import time
+
 #from PlayerDatabase import PlayerDatabase
 
 #git pull origin
@@ -271,6 +276,22 @@ def show_main_window(app):
 
 
 def start_game():
+    # Countdown at start of game.
+    image_number = 0
+    root = tk.Tk()
+    root.title("Countdown")
+    label = tk.Label(root)
+    label.pack()
+    for i in reversed(range(31)):
+        img = Image.open(f"countdown_images/{i}.tif")
+        img = img.resize((900, 600))
+        time.sleep(1)
+        tk_img = ImageTk.PhotoImage(img)
+        label.configure(image=tk_img)
+        label.image = tk_img
+        root.update()
+    root.destroy()
+
     # Show the play action screen window, code for it should be directly above this function
     dpg.configure_item("PlayActionScreen", show=True)
 
