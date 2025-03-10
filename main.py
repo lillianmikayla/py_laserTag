@@ -255,20 +255,32 @@ def show_main_window(app):
     dpg.show_item("RedTable")
     dpg.show_item("GreenTable")
 
+    # Red panel background theme for play action screen
+    with dpg.theme() as red_panel_theme:
+        with dpg.theme_component(dpg.mvAll):
+            dpg.add_theme_color(dpg.mvThemeCol_ChildBg, (150, 60, 60)) 
+
+    # Green panel background theme for play action screen
+    with dpg.theme() as green_panel_theme:
+        with dpg.theme_component(dpg.mvAll):
+            dpg.add_theme_color(dpg.mvThemeCol_ChildBg, (50, 150, 50)) 
+
     # Play action screen window (initially hidden)
     with dpg.window(label="Play Action Screen", pos=(0, 0), width=900, height=600, show=False, tag="PlayActionScreen", no_resize=True, no_move=True):
 
         # Red and green team scores windows
         with dpg.group(horizontal=True):
             with dpg.child_window(width=288, height=500, tag="RedTeamScores"):
-                dpg.add_text("Red Team Scores")
+                dpg.bind_item_theme("RedTeamScores", red_panel_theme)
+                dpg.add_text("Red Team Scores", color=(255,200,200), indent=70)
 
             # Add a new child window for current game action
             with dpg.child_window(width=288, height=500):
-                dpg.add_text("Current Game Action")
+                dpg.add_text("Current Game Action", indent=70)
 
             with dpg.child_window(width=288, height=500, tag="GreenTeamScores"):
-                dpg.add_text("Green Team Scores")
+                dpg.bind_item_theme("GreenTeamScores", green_panel_theme) 
+                dpg.add_text("Green Team Scores", color=(200,255,200), indent=70)
 
 
         # Game Timer window - 6 minutes per game, one time 30 second start down 
@@ -340,11 +352,11 @@ def start_game():
 
     # Add spacer to move the total score to the bottom right
     with dpg.group(horizontal=True, parent="RedTeamScores"):
-        dpg.add_spacer(width=130)  
+        dpg.add_spacer(width=65)  
         dpg.add_text(f"Total Score: {total_red_score}", tag="RedTeamTotalScore")
 
     with dpg.group(horizontal=True, parent="GreenTeamScores"):
-        dpg.add_spacer(width=130)  
+        dpg.add_spacer(width=65)  
         dpg.add_text(f"Total Score: {total_green_score}", tag="GreenTeamTotalScore")
 
 
