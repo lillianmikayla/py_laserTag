@@ -3,6 +3,7 @@ import time
 import udpclient
 import udpserver
 import threading
+import multiprocessing
 
 from PIL import Image, ImageTk
 import tkinter as tk
@@ -275,22 +276,39 @@ def show_main_window(app):
             dpg.add_text("Game Timer")
 
 
-def start_game():
-    # Countdown at start of game.
-    image_number = 0
+# Define the countdown function
+def countdown(event, pos_x, pos_y):
     root = tk.Tk()
     root.title("Countdown")
+    root.attributes("-topmost", True)  # Set the window to be always on top
+    root.geometry(f"+{pos_x}+{pos_y}")  # Set the position of the window
     label = tk.Label(root)
     label.pack()
     for i in reversed(range(31)):
         img = Image.open(f"countdown_images/{i}.tif")
         img = img.resize((900, 600))
-        time.sleep(1)
         tk_img = ImageTk.PhotoImage(img)
         label.configure(image=tk_img)
         label.image = tk_img
         root.update()
+        time.sleep(1)
     root.destroy()
+    event.set()  # Signal that the countdown is complete
+
+
+def start_game():
+    # Create an event to signal when the countdown is complete
+    countdown_complete_event = multiprocessing.Event()
+
+    # Retrieve the position of the Dear PyGui window
+    pos_x, pos_y = dpg.get_viewport_pos()
+
+    # Start the countdown in a separate process
+    countdown_process = multiprocessing.Process(target=countdown, args=(countdown_complete_event, pos_x, pos_y))
+    countdown_process.start()
+
+    # Wait for the countdown to complete
+    countdown_complete_event.wait()
 
     # Show the play action screen window, code for it should be directly above this function
     dpg.configure_item("PlayActionScreen", show=True)
