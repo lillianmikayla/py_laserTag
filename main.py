@@ -137,10 +137,14 @@ def input_id_callback(sender, app_data, user_data):
             if sender == f"redTable_{user_data[0]}":
                 # Set the codename to the value stored in check
                 dpg.set_value(f"redTable_codename_{user_data[0]}", check)
+                player_codenames["red"][user_data[0]] = check # store red codename in dictionary
+                player_scores["red"][user_data[0]] = 0  # store red score in dictionary
                 dpg.configure_item(f"redTable_equipment_{user_data[0]}", readonly=False)
                 dpg.bind_item_theme(sender, 0)
             elif sender == f"greenTable_{user_data[0]}":
                 dpg.set_value(f"greenTable_codename_{user_data[0]}", check)
+                player_codenames["green"][user_data[0]] = check
+                player_scores["green"][user_data[0]] = 0
                 dpg.configure_item(f"greenTable_equipment_{user_data[0]}", readonly=False) 
                 dpg.bind_item_theme(sender, 0)
             return
