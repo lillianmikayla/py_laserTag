@@ -2,7 +2,7 @@ import socket
 
 bufferSize = 1024
 localIP = "127.0.0.1"
-localPort = 7502
+localPort = 7500
 ADDR = (localIP, localPort)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "221"
@@ -27,6 +27,15 @@ def player_added(player_count):
 
     #if player_count == 2:
         #client.close()
+        
+def inputEquipID(equipmentID):
+    bytesToSend = equipmentID.encode(FORMAT)
+    client.sendto(bytesToSend, ADDR)
+
+    #Hello UDP Client Message:
+    #for some reason whenever I try to remove this message from the server it breaks the code so it stays for now
+    msgFromServer = client.recvfrom(bufferSize) 
+    msg = "Message from Server{}".format(msgFromServer[0]) 
 
 if __name__ == "__main__":
     print("Starting client...")
