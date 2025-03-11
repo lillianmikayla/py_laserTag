@@ -9,89 +9,89 @@ from PIL import Image, ImageTk
 import tkinter as tk
 import time
 
-#from PlayerDatabase import PlayerDatabase
+from PlayerDatabase import PlayerDatabase
 
 #git pull origin
 
 #player DB class, previously class main in the database main.py test file
 #commented out when not testing in VM
 
-# class PlayerDBApp:
-#     def __init__(self):
-#         self.db = PlayerDatabase()  # No need to pass credentials!
-#         self.localPlayerCount = 0
-
-#     def flush(self):
-#         self.db.clear_database()
-#         self.db.add_player(500, 'BhodiLi')
-#         self.db.add_player(501, 'Alpha')
-        
-#     def runTest(self):
-#         # Adding players
-#         self.db.add_player(500, 'BhodiLi')
-#         self.db.add_player(501, 'Alpha')
-
-#         # Retrieving player info
-#         print("Codename for ID 500:", self.db.get_codename_by_id(500))
-#         print("ID for codename 'Alpha':", self.db.get_id_by_codename('Alpha'))
-
-#         # Close DB connection
-#         #self.db.close_connection()
-        
-#     def checkID(self, id):
-#         #check for ID
-#         IDcheck = self.db.id_exists(id)
-#         if IDcheck == None:
-#             #add ID, prompt for codename
-#             return None
-#         else:
-#             self.localPlayerCount += 1
-#             udpclient.player_added(self.localPlayerCount)
-#             return IDcheck
-    
-#     def addPlayer(self, id, codename):
-#         #add player to database
-#         self.db.add_player(id, codename)
-#         self.localPlayerCount += 1
-#         udpclient.player_added(self.localPlayerCount)
-        
-class fakeDatabase:
+class PlayerDBApp:
     def __init__(self):
+        self.db = PlayerDatabase()  # No need to pass credentials!
         self.localPlayerCount = 0
-        self.fakeDatabase = {}
 
     def flush(self):
-        self.fakeDatabase.clear()
-        self.fakeDatabase[500] = 'BhodiLi'
-        self.fakeDatabase[501] = 'Alpha'
+        self.db.clear_database()
+        self.db.add_player(500, 'BhodiLi')
+        self.db.add_player(501, 'Alpha')
         
     def runTest(self):
         # Adding players
-        self.fakeDatabase[500] = 'BhodiLi'
-        self.fakeDatabase[501] = 'Alpha'
+        self.db.add_player(500, 'BhodiLi')
+        self.db.add_player(501, 'Alpha')
 
         # Retrieving player info
-        print("Codename for ID 500:", self.fakeDatabase[500])
+        print("Codename for ID 500:", self.db.get_codename_by_id(500))
+        print("ID for codename 'Alpha':", self.db.get_id_by_codename('Alpha'))
 
         # Close DB connection
         #self.db.close_connection()
         
     def checkID(self, id):
         #check for ID
-        IDcheck = self.fakeDatabase.get(id)
-        if IDcheck is None:
+        IDcheck = self.db.id_exists(id)
+        if IDcheck == None:
             #add ID, prompt for codename
             return None
         else:
             self.localPlayerCount += 1
-            #udpclient.player_added(self.localPlayerCount)
+            udpclient.player_added(self.localPlayerCount)
             return IDcheck
     
     def addPlayer(self, id, codename):
         #add player to database
-        self.fakeDatabase[id] = codename
+        self.db.add_player(id, codename)
         self.localPlayerCount += 1
-        #udpclient.player_added(self.localPlayerCount)
+        udpclient.player_added(self.localPlayerCount)
+        
+# class fakeDatabase:
+#     def __init__(self):
+#         self.localPlayerCount = 0
+#         self.fakeDatabase = {}
+
+#     def flush(self):
+#         self.fakeDatabase.clear()
+#         self.fakeDatabase[500] = 'BhodiLi'
+#         self.fakeDatabase[501] = 'Alpha'
+        
+#     def runTest(self):
+#         # Adding players
+#         self.fakeDatabase[500] = 'BhodiLi'
+#         self.fakeDatabase[501] = 'Alpha'
+
+#         # Retrieving player info
+#         print("Codename for ID 500:", self.fakeDatabase[500])
+
+#         # Close DB connection
+#         #self.db.close_connection()
+        
+#     def checkID(self, id):
+#         #check for ID
+#         IDcheck = self.fakeDatabase.get(id)
+#         if IDcheck is None:
+#             #add ID, prompt for codename
+#             return None
+#         else:
+#             self.localPlayerCount += 1
+#             #udpclient.player_added(self.localPlayerCount)
+#             return IDcheck
+    
+#     def addPlayer(self, id, codename):
+#         #add player to database
+#         self.fakeDatabase[id] = codename
+#         self.localPlayerCount += 1
+#         #udpclient.player_added(self.localPlayerCount)
 
 #callback section: sender = table cell ID, app_data = value in cell, user_data = tuple of (row, column, app)
 
@@ -407,8 +407,8 @@ def main():
     splash_duration = 3  # duration in seconds
     start_time = time.time()
     
-    #app = PlayerDBApp()
-    app = fakeDatabase()
+    app = PlayerDBApp()
+    #app = fakeDatabase()
     
     #first, initial loop - splash screen
     while dpg.is_dearpygui_running():
