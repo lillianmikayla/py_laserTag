@@ -1,6 +1,6 @@
 import dearpygui.dearpygui as dpg
 import time
-#import udpclient
+import udpclient
 import threading
 import multiprocessing
 #from udpserver import start_udp_server
@@ -46,14 +46,14 @@ class PlayerDBApp:
             return None
         else:
             self.localPlayerCount += 1
-            #udpclient.player_added(self.localPlayerCount)
+            udpclient.player_added(self.localPlayerCount)
             return IDcheck
     
     def addPlayer(self, id, codename):
         #add player to database
         self.db.add_player(id, codename)
         self.localPlayerCount += 1
-        #udpclient.player_added(self.localPlayerCount)
+        udpclient.player_added(self.localPlayerCount)
         
 # class fakeDatabase:
 #     def __init__(self):
@@ -164,12 +164,12 @@ def input_codename_callback(sender, app_data, user_data):
     
 def input_equipID_callback(sender, app_data, user_data): 
     equipment_id_str = str(app_data)
-    #udpclient.inputEquipID(equipment_id_str)
+    udpclient.inputEquipID(equipment_id_str)
 
 def network_swap_callback(sender, app_data, user_data):
     #further modification to handle bad IP needed (?)
-    #udpclient.change_network(app_data)
-    print("Previously Linked to server")
+    udpclient.change_network(app_data)
+    #print("Previously Linked to server")
 
 def show_main_window(app):
     dpg.delete_item("Splash Window")
