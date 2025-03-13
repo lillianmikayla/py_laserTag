@@ -4,12 +4,13 @@ We are using python 3.13.2 (latest release), please ensure you have this version
 
 
 Run these commands to install the dependencies:  
-(If pip doesn't work, try pip3)  
-$ python3 -m pip3 install --upgrade pip  
-$ python3 -m pip3 install dearpygui  
+(If pip doesn't work, try pip3 or python3 -m pip3)  
+$ sudo apt-get install python3-pip
+$ pip install --upgrade pip 
+$ pip install dearpygui  
 $ sudo apt install libpq-dev python3-dev  
-$ python3 -m pip3 install psycopg2  
-$ python3 -m pip3 install Pillow (<- New!)
+$ pip install psycopg2  
+$ pip install Pillow (<- New!)
   
 To run the program:  
 $ python3 main.py  
