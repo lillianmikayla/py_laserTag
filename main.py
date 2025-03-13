@@ -3,6 +3,7 @@ import time
 import udpclient
 import threading
 import multiprocessing
+from udpserver import start_udp_server
 
 from PIL import Image, ImageTk
 import tkinter as tk
@@ -384,6 +385,10 @@ def clear_entries():
 
 
 def main():
+    # Start the UDP server in a separate thread
+    udp_server_thread = threading.Thread(target=start_udp_server, daemon=True)
+    udp_server_thread.start()
+
     #init graphics
     dpg.create_context()
     dpg.create_viewport(title='Laser Tag', width=910, height=610)
