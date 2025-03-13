@@ -1,7 +1,6 @@
 import dearpygui.dearpygui as dpg
 import time
 import udpclient
-import udpserver
 import threading
 import multiprocessing
 
@@ -169,7 +168,6 @@ def input_equipID_callback(sender, app_data, user_data):
 def network_swap_callback(sender, app_data, user_data):
     #further modification to handle bad IP needed (?)
     udpclient.change_network(app_data)
-    udpserver.change_network(app_data)
 
 def show_main_window(app):
     dpg.delete_item("Splash Window")
@@ -386,10 +384,6 @@ def clear_entries():
 
 
 def main():
-    # Start the UDP server in a separate thread
-    server_thread = threading.Thread(target=udpserver.start_server, daemon=True)
-    server_thread.start()
-
     #init graphics
     dpg.create_context()
     dpg.create_viewport(title='Laser Tag', width=910, height=610)
