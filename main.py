@@ -1,9 +1,9 @@
 import dearpygui.dearpygui as dpg
 import time
-import udpclient
+#import udpclient
 import threading
 import multiprocessing
-from udpserver import start_udp_server
+#from udpserver import start_udp_server
 
 from PIL import Image, ImageTk
 import tkinter as tk
@@ -164,11 +164,12 @@ def input_codename_callback(sender, app_data, user_data):
     
 def input_equipID_callback(sender, app_data, user_data): 
     equipment_id_str = str(app_data)
-    udpclient.inputEquipID(equipment_id_str)
+    #udpclient.inputEquipID(equipment_id_str)
 
 def network_swap_callback(sender, app_data, user_data):
     #further modification to handle bad IP needed (?)
-    udpclient.change_network(app_data)
+    #udpclient.change_network(app_data)
+    print("Previously Linked to server")
 
 def show_main_window(app):
     dpg.delete_item("Splash Window")
@@ -386,8 +387,8 @@ def clear_entries():
 
 def main():
     # Start the UDP server in a separate thread
-    udp_server_thread = threading.Thread(target=start_udp_server, daemon=True)
-    udp_server_thread.start()
+    #udp_server_thread = threading.Thread(target=start_udp_server, daemon=True)
+    #udp_server_thread.start()
 
     #init graphics
     dpg.create_context()
