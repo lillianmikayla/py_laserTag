@@ -1,7 +1,7 @@
 import dearpygui.dearpygui as dpg
 import time
 import udpclient
-#import udpserver
+from udpserver import start_udp_server
 import threading
 import multiprocessing
 
@@ -383,8 +383,8 @@ def clear_entries():
 
 def main():
     # Start the UDP server in a separate thread
-    #server_thread = threading.Thread(target=udpserver.start_server, daemon=True)
-    #server_thread.start()
+    udp_server_thread = threading.Thread(target=start_udp_server, daemon=True)
+    udp_server_thread.start()
 
     #init graphics
     dpg.create_context()
