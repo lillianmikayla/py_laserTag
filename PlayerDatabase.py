@@ -1,6 +1,6 @@
 import psycopg2
 from psycopg2 import sql
-import udpclient  
+#import udpclient  
 
 class PlayerDatabase():
     def __init__(self):
