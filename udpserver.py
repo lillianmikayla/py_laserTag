@@ -1,41 +1,29 @@
 import socket
 
-localIP = "127.0.0.1"
-localPort = 7501
-ADDR = (localIP, localPort)
-FORMAT = 'utf-8'
-DISCONNECT_MESSAGE = "221" 
-buffersize = 1024
+# This server implementation only acts to ensure that the client is broadcasting correctly
+# This server is not intended to be used for any other purpose right now.
+ 
+def start_udp_server():
+    bufferSize = 1024
+    localIP = "127.0.0.1"
+    localPort = 7500
 
-msgFromServer = "Hello UDP Client."
-bytesToSend = str.encode(msgFromServer)
+    # Create a datagram socket
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # Create a socket.
+    # Bind the socket to the address and port
+    server_socket.bind((localIP, localPort))
 
-def change_network(new_ip):
-    global ADDR
-    ADDR = (new_ip, localPort) # Update the address with the new IP.
-    print(f"Server network changed to IP: {new_ip}, Port: {localPort}")
+    print("UDP server up and listening on port 7500")
 
-def start_server():
-    server.bind(ADDR) # Bind the server to the address.
-    print(f"[STARTING] Server is starting...")
-
+    # Listen for incoming datagrams
     while True:
-        connected = True
-        message, address = server.recvfrom(buffersize) 
-        while connected:
-            if message.decode(FORMAT) == DISCONNECT_MESSAGE: # If input = 221, disconnect.
-                connected = False
-                clientMsg = "Player has disconnected.".format(message)
-                print(clientMsg)
-            else:
-                clientMsg = "[SERVER] Here is player's equipment number: {}".format(message)
-                print(clientMsg)
-                server.sendto(bytesToSend, address)
+        bytes_address_pair = server_socket.recvfrom(bufferSize)
+        message = bytes_address_pair[0]
+        address = bytes_address_pair[1]
 
-            if connected:
-                message, address = server.recvfrom(buffersize) # Receive message from client.
+        client_msg = "Message from Client:{}".format(message.decode('utf-8'))
+        client_ip = "Client IP Address:{}".format(address)
 
-if __name__ == "__main__":
-    start_server()
+        print(client_msg)
+        print(client_ip)
