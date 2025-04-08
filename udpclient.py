@@ -23,5 +23,13 @@ def inputEquipID(equipmentID):
     bytesToSend = equipmentID.encode(FORMAT)
     client.sendto(bytesToSend, ADDR)
 
+
+def send_game_code(code):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    server_address = ("127.0.0.1", 7500)
+    message = str(code).encode()
+    sock.sendto(message, server_address)
+    sock.close()
+
 if __name__ == "__main__":
     print("Starting client...")

@@ -363,6 +363,8 @@ def start_game():
         dpg.add_spacer(width=65)  
         dpg.add_text(f"Total Score: {total_green_score}", tag="GreenTeamTotalScore")
 
+    udpclient.send_game_code(202)
+    print("Game code 202 sent")
 
 
 def clear_entries():
