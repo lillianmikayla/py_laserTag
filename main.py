@@ -106,6 +106,25 @@ player_scores= {
     "green": {}
 }
 
+
+#listening to hits on client port (7501)
+def listen_for_hits():
+    bufferSize = 1024
+    localIP = "127.0.0.1"
+    localPort = 7501  #client port
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    server_socket.bind((localIP, localPort))
+
+    print(f"Listening for hit messages on {localIP}:{localPort}")
+
+    while True:
+        data, addr = server_socket.recvfrom(bufferSize)
+        message = data.decode('utf-8')
+        print(f"Received game hit: {message}")
+
+        # you can send a response after the above code
+        # like stop game
+
 def input_id_callback(sender, app_data, user_data):
     #invalid theme for handling invalid input scenario
     with dpg.theme() as invalid_theme:
@@ -313,6 +332,11 @@ def countdown(event, pos_x, pos_y):
 
 
 def start_game():
+
+    #listens for hits
+    hit_listener_thread = threading.Thread(target=listen_for_hits, daemon=True)
+    hit_listener_thread.start()
+
     # Create an event to signal when the countdown is complete
     countdown_complete_event = multiprocessing.Event()
 
