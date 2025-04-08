@@ -122,8 +122,12 @@ def listen_for_hits():
         message = data.decode('utf-8')
         print(f"Received game hit: {message}")
 
-        # you can send a response after the above code
+
+        # you can send a response
         # like stop game
+        #but this is a placeholder
+        server_socket.sendto("OK".encode(), addr)
+
 
 def input_id_callback(sender, app_data, user_data):
     #invalid theme for handling invalid input scenario
@@ -333,10 +337,6 @@ def countdown(event, pos_x, pos_y):
 
 def start_game():
 
-    #listens for hits
-    hit_listener_thread = threading.Thread(target=listen_for_hits, daemon=True)
-    hit_listener_thread.start()
-
     # Create an event to signal when the countdown is complete
     countdown_complete_event = multiprocessing.Event()
 
@@ -389,6 +389,10 @@ def start_game():
 
     udpclient.send_game_code(202)
     print("Game code 202 sent")
+    
+    #listens for hits
+    hit_listener_thread = threading.Thread(target=listen_for_hits, daemon=True)
+    hit_listener_thread.start()
 
 
 def clear_entries():
