@@ -111,22 +111,24 @@ player_scores= {
 def listen_for_hits():
     bufferSize = 1024
     localIP = "127.0.0.1"
-    localPort = 7501  #client port
+    localPort = 7501
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     server_socket.bind((localIP, localPort))
 
-    print(f"Listening for hit messages on {localIP}:{localPort}")
+    print(f"[LISTENER] Listening for hit messages on {localIP}:{localPort}")
 
     while True:
-        data, addr = server_socket.recvfrom(bufferSize)
-        message = data.decode('utf-8')
-        print(f"Received game hit: {message}")
+        try:
+            data, addr = server_socket.recvfrom(bufferSize)
+            message = data.decode('utf-8').strip()
+            print(f"[LISTENER] Received game hit: {message}")
 
+            # Always send a response back to traffic generator
+            server_socket.sendto("OK".encode(), addr)
+            print(f"[LISTENER] Replied with OK to {addr}")
 
-        # you can send a response
-        # like stop game
-        #but this is a placeholder
-        server_socket.sendto("OK".encode(), addr)
+        except Exception as e:
+            print(f"[LISTENER] Error: {e}")
 
 
 def input_id_callback(sender, app_data, user_data):
@@ -389,7 +391,7 @@ def start_game():
 
     udpclient.send_game_code(202)
     print("Game code 202 sent")
-    
+
     #listens for hits
     hit_listener_thread = threading.Thread(target=listen_for_hits, daemon=True)
     hit_listener_thread.start()
