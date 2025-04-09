@@ -42,6 +42,7 @@ def start_udp_server(event_queue):
                 server_socket.sendto(message.encode('utf-8'), traffic_generator_address)
                 break
             else:
+                #print(f"Event Recieved: {message}")
                 event_queue.put(message)
 
                 if ":" in message:

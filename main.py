@@ -365,11 +365,11 @@ def start_game():
         dpg.add_table_column()
         dpg.add_table_column()
         dpg.add_table_column()
-        for i, codename in player_codenames["red"].items(): # Iterate through the red team player_codenames dictionary
+        for i, codename in player_codenames["red"].items():  # Iterate through the red team player_codenames dictionary
             with dpg.table_row():
-                dpg.add_text(f"{codename}", tag=f"playScreen_Red{i}") # Display the codename
-                dpg.add_spacer() # spacer column 
-                dpg.add_text(f"{player_scores['red'][i]}") # Display the score using player_scores dictionary
+                dpg.add_text(f"{codename}", tag=f"playScreen_RedCodename{i}")  # Display the codename
+                dpg.add_spacer()  # Spacer column
+                dpg.add_text(f"{player_scores['red'][i]}", tag=f"playScreen_RedScore{i}")  # Display the score with a unique tag
 
     with dpg.table(header_row=False, parent="GreenTeamScores"):
         dpg.add_table_column()
@@ -377,9 +377,9 @@ def start_game():
         dpg.add_table_column()
         for i, codename in player_codenames["green"].items():
             with dpg.table_row():
-                dpg.add_text(f"{codename}", tag=f"playScreen_Green{i}")
+                dpg.add_text(f"{codename}", tag=f"playScreen_GreenCodename{i}")
                 dpg.add_spacer()
-                dpg.add_text(f"{player_scores['green'][i]}")
+                dpg.add_text(f"{player_scores['green'][i]}", tag=f"playScreen_GreenScore{i}")
 
     # Calculate and display the total scores
     total_red_score = sum(player_scores["red"].values())
@@ -426,35 +426,32 @@ def clear_entries():
     
 def addBase(playerID, team):
     if team == 'R':
-        dpg.set_value(f"playScreen_Red{playerID}", f"{player_codenames['red'][playerID]} [B]")
+        dpg.set_value(f"playScreen_RedCodename{playerID}", f"{player_codenames['red'][playerID]} [B]")
     elif team == 'G':
-        dpg.set_value(f"playScreen_Green{playerID}", f"{player_codenames['green'][playerID]} [B]")
+        dpg.set_value(f"playScreen_GreenCodename{playerID}", f"{player_codenames['green'][playerID]} [B]")
     
 def update_game_action(event_queue):
     while not event_queue.empty():
         # Get the next event from the queue
         event = event_queue.get()
 
-        # below code works by parsing string into 2 players, player 1 and 2 ("2:4" p1 = 2, p2 = 4)
-        # only handles red and green team players, base hit events are handled separately
-        # all of this is based on traffic generator's event format of 1-4 players, it ONLY works w 2 players in red 2 in green.
         try:
+            # Parse the event string (e.g., "2:4")
             player1, player2 = event.split(":")
             player1 = int(player1)
             player2 = int(player2)
 
-            # get codenames from dictionaries
-            # if player 1 is in [1,2], it's red team. [3,4] is green team
+            # Get codenames from dictionaries
             if player1 in [1, 2]:  # Red team
-                codename1 = player_codenames["red"].get(player1 - 1, f"Player {player1}") # converts to 0 based index
+                codename1 = player_codenames["red"].get(player1 - 1, f"Player {player1}")
             elif player1 in [3, 4]:  # Green team
-                codename1 = player_codenames["green"].get(player1 - 3, f"Player {player1}") # converts to 0 based index
+                codename1 = player_codenames["green"].get(player1 - 3, f"Player {player1}")
             else:
                 codename1 = f"Player {player1}"
 
-            if player2 in [1, 2]: 
+            if player2 in [1, 2]:  # Red team
                 codename2 = player_codenames["red"].get(player2 - 1, f"Player {player2}")
-            elif player2 in [3, 4]:  
+            elif player2 in [3, 4]:  # Green team
                 codename2 = player_codenames["green"].get(player2 - 3, f"Player {player2}")
             elif player2 in [43, 53]:  # Base hit events
                 if player2 == 43:
@@ -463,8 +460,29 @@ def update_game_action(event_queue):
                 elif player2 == 53:
                     codename2 = "Green Base"
                     addBase(player1 - 3, 'G')
+            # Add 100 points to player1 for hitting a base
+                if player1 in [1, 2]:  # Red team
+                    player_scores["red"][player1 - 1] += 100
+                elif player1 in [3, 4]:  # Green team
+                    player_scores["green"][player1 - 3] += 100
             else:
                 codename2 = f"Player {player2}"
+
+            # Scoring logic
+            if player1 in [1, 2] and player2 in [3, 4]:  # Red player hits Green player
+                player_scores["red"][player1 - 1] += 10
+            elif player1 in [3, 4] and player2 in [1, 2]:  # Green player hits Red player
+                player_scores["green"][player1 - 3] += 10
+            elif player1 in [1, 2] and player2 in [1, 2]:  # Red player hits Red player
+                player_scores["red"][player1 - 1] -= 10
+            elif player1 in [3, 4] and player2 in [3, 4]:  # Green player hits Green player
+                player_scores["green"][player1 - 3] -= 10
+
+            # Update the GUI scores
+            for i, score in player_scores["red"].items():
+                dpg.set_value(f"playScreen_RedScore{i}", f"{score}")
+            for i, score in player_scores["green"].items():
+                dpg.set_value(f"playScreen_GreenScore{i}", f"{score}")
 
             # Format the event string
             formatted_event = f"{codename1} hit {codename2}"
