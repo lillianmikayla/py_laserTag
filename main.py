@@ -348,7 +348,7 @@ def start_game():
         dpg.add_table_column()
         for i, codename in player_codenames["red"].items(): # Iterate through the red team player_codenames dictionary
             with dpg.table_row():
-                dpg.add_text(f"{codename}") # Display the codename
+                dpg.add_text(f"{codename}", tag=f"playScreen_Red{i}") # Display the codename
                 dpg.add_spacer() # spacer column 
                 dpg.add_text(f"{player_scores['red'][i]}") # Display the score using player_scores dictionary
 
@@ -358,7 +358,7 @@ def start_game():
         dpg.add_table_column()
         for i, codename in player_codenames["green"].items():
             with dpg.table_row():
-                dpg.add_text(f"{codename}")
+                dpg.add_text(f"{codename}", tag=f"playScreen_Green{i}")
                 dpg.add_spacer()
                 dpg.add_text(f"{player_scores['green'][i]}")
 
@@ -405,6 +405,12 @@ def clear_entries():
     player_scores["red"].clear()
     player_scores["green"].clear()
     
+def addBase(playerID, team):
+    if team == 'R':
+        dpg.set_value(f"playScreen_Red{playerID}", f"{player_codenames['red'][playerID]} [B]")
+    elif team == 'G':
+        dpg.set_value(f"playScreen_Green{playerID}", f"{player_codenames['green'][playerID]} [B]")
+    
 def update_game_action(event_queue):
     while not event_queue.empty():
         # Get the next event from the queue
@@ -431,6 +437,13 @@ def update_game_action(event_queue):
                 codename2 = player_codenames["red"].get(player2 - 1, f"Player {player2}")
             elif player2 in [3, 4]:  
                 codename2 = player_codenames["green"].get(player2 - 3, f"Player {player2}")
+            elif player2 in [43, 53]:  # Base hit events
+                if player2 == 43:
+                    codename2 = "Red Base"
+                    addBase(player1, 'R')
+                elif player2 == 53:
+                    codename2 = "Green Base"
+                    addBase(player1, 'G')
             else:
                 codename2 = f"Player {player2}"
 
