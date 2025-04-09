@@ -107,6 +107,7 @@ player_scores= {
     "green": {}
 }
 
+
 def input_id_callback(sender, app_data, user_data):
     #invalid theme for handling invalid input scenario
     with dpg.theme() as invalid_theme:
@@ -364,6 +365,13 @@ def start_game():
     print("Game start signal (202) sent.")
 
 
+def stop_game():
+    import udpserver
+    for i in range(3):
+        udpserver.server_should_stop = True
+        print("STOP GAME TRIGGERED")
+
+
 
 def clear_entries():
     for i in range(15):
@@ -431,6 +439,7 @@ def main():
     #init graphics
     dpg.create_context()
     dpg.create_viewport(title='Laser Tag', width=910, height=610)
+
 
     #splash image
     with dpg.texture_registry():

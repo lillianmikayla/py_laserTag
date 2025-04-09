@@ -1,6 +1,9 @@
 import socket
 import queue
 
+
+server_should_stop = False
+
 # This server implementation listens for events from the traffic generator
 def start_udp_server(event_queue):
     bufferSize = 1024
@@ -17,6 +20,11 @@ def start_udp_server(event_queue):
 
     # Listen for incoming datagrams
     while True:
+        if server_should_stop:
+            print("Game timer ended. Sending code to traffic generator.")
+            stop_code = "221"
+            server_socket.sendto(stop_code.encode('utf-8'), ("127.0.0.1", 7500))
+
         try:
             # Receive message from the client or traffic generator
             bytes_address_pair = server_socket.recvfrom(bufferSize)
