@@ -388,10 +388,32 @@ def update_game_action(event_queue):
         # Get the next event from the queue
         event = event_queue.get()
 
-        # Parse the event string (e.g., "2:4")
+        # below code works by parsing string into 2 players, player 1 and 2 ("2:4" p1 = 2, p2 = 4)
+        # only handles red and green team players, base hit events are handled separately
+        # all of this is based on traffic generator's event format of 1-4 players, it ONLY works w 2 players in red 2 in green.
         try:
             player1, player2 = event.split(":")
-            formatted_event = f"Player {player1} hit Player {player2}"
+            player1 = int(player1)
+            player2 = int(player2)
+
+            # get codenames from dictionaries
+            # if player 1 is in [1,2], it's red team. [3,4] is green team
+            if player1 in [1, 2]:  # Red team
+                codename1 = player_codenames["red"].get(player1 - 1, f"Player {player1}") # converts to 0 based index
+            elif player1 in [3, 4]:  # Green team
+                codename1 = player_codenames["green"].get(player1 - 3, f"Player {player1}") # converts to 0 based index
+            else:
+                codename1 = f"Player {player1}"
+
+            if player2 in [1, 2]: 
+                codename2 = player_codenames["red"].get(player2 - 1, f"Player {player2}")
+            elif player2 in [3, 4]:  
+                codename2 = player_codenames["green"].get(player2 - 3, f"Player {player2}")
+            else:
+                codename2 = f"Player {player2}"
+
+            # Format the event string
+            formatted_event = f"{codename1} hit {codename2}"
         except ValueError:
             # Handle invalid event format
             formatted_event = f"Invalid event: {event}"
