@@ -3,8 +3,8 @@ import random
 import time
 
 bufferSize  = 1024
-serverAddressPort   = ("127.0.0.1", 7500)
-clientAddressPort   = ("127.0.0.1", 7501)
+serverAddressPort   = ("127.0.0.1", 7501)
+clientAddressPort   = ("127.0.0.1", 7500)
 
 
 print('this program will generate some test traffic for 2 players on the red ')
@@ -20,8 +20,8 @@ green2 = input('Enter equipment id of green player 2 ==> ')
 UDPServerSocketReceive = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 UDPClientSocketTransmit = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
-# bind server socket
-UDPServerSocketReceive.bind(serverAddressPort)
+# bind client socket
+UDPServerSocketReceive.bind(clientAddressPort)
 
 # wait for start from game software
 print ("")
@@ -61,9 +61,10 @@ while True:
 		
 	print("transmitting to game: " + message)
 	
-	UDPClientSocketTransmit.sendto(str.encode(str(message)), clientAddressPort)
+	UDPClientSocketTransmit.sendto(str.encode(str(message)), serverAddressPort)
 	# receive answer from game softare
-	
+
+	print ("waiting for response from game_software")
 	
 	received_data, address = UDPServerSocketReceive.recvfrom(bufferSize)
 	received_data = received_data.decode('utf-8')

@@ -1,12 +1,10 @@
 import socket
 
-# This server implementation only acts to ensure that the client is broadcasting correctly
-# This server is not intended to be used for any other purpose right now.
- 
+# This server implementation listens for events from the traffic generator
 def start_udp_server():
     bufferSize = 1024
     localIP = "127.0.0.1"
-    localPort = 7500
+    localPort = 7501  # Server listens on port 7501
 
     # Create a datagram socket
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -14,16 +12,37 @@ def start_udp_server():
     # Bind the socket to the address and port
     server_socket.bind((localIP, localPort))
 
-    print("UDP server up and listening on port 7500")
+    print(f"UDP server up and listening on port {localPort}")
 
     # Listen for incoming datagrams
     while True:
-        bytes_address_pair = server_socket.recvfrom(bufferSize)
-        message = bytes_address_pair[0]
-        address = bytes_address_pair[1]
+        try:
+            # Receive message from the client or traffic generator
+            bytes_address_pair = server_socket.recvfrom(bufferSize)
+            message = bytes_address_pair[0].decode('utf-8')  # Decode the message
+            traffic_generator_address = ("127.0.0.1", 7500)
 
-        client_msg = "Message from Client:{}".format(message.decode('utf-8'))
-        client_ip = "Client IP Address:{}".format(address)
+            if message == "202":
+                print("Game Start Code (202) received from client.")
+                # Forward the game start code to the traffic generator
+                server_socket.sendto(message.encode('utf-8'), traffic_generator_address)
+                print("Game Start Code (202) forwarded to Traffic Generator.")
+            elif message == "221":
+                print("Game Stop Code (221) received. Stopping server...")
+                # Forward the stop code to the traffic generator
+                server_socket.sendto(message.encode('utf-8'), traffic_generator_address)
+                break
+            else:
+                print(f"Event received: {message}")
 
-        print(client_msg)
-        print(client_ip)
+                acknowledgment = "Event received"
+                server_socket.sendto(acknowledgment.encode('utf-8'), traffic_generator_address)
+                
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            break
+
+    # Close the socket when the server stops
+    server_socket.close()
+    print("UDP server has stopped.")

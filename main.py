@@ -309,18 +309,18 @@ def countdown(event, pos_x, pos_y):
 
 
 def start_game():
-    # Create an event to signal when the countdown is complete
-    countdown_complete_event = multiprocessing.Event()
+    # # Create an event to signal when the countdown is complete
+    # countdown_complete_event = multiprocessing.Event()
 
-    # Retrieve the position of the Dear PyGui window
-    pos_x, pos_y = dpg.get_viewport_pos()
+    # # Retrieve the position of the Dear PyGui window
+    # pos_x, pos_y = dpg.get_viewport_pos()
 
-    # Start the countdown in a separate process
-    countdown_process = multiprocessing.Process(target=countdown, args=(countdown_complete_event, pos_x, pos_y))
-    countdown_process.start()
+    # # Start the countdown in a separate process
+    # countdown_process = multiprocessing.Process(target=countdown, args=(countdown_complete_event, pos_x, pos_y))
+    # countdown_process.start()
 
-    # Wait for the countdown to complete
-    countdown_complete_event.wait()
+    # # Wait for the countdown to complete
+    # countdown_complete_event.wait()
 
     # Show the play action screen window, code for it should be directly above this function
     dpg.configure_item("PlayActionScreen", show=True)
