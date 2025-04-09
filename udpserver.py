@@ -34,10 +34,20 @@ def start_udp_server(event_queue):
                 server_socket.sendto(message.encode('utf-8'), traffic_generator_address)
                 break
             else:
-                print(f"Event received: {message}")
                 event_queue.put(message)
 
-                acknowledgment = "Event received"
+                if ":" in message:
+                    try:
+                        shooter, target = message.split(":")
+                        print(f"Event received: {target}")
+                        acknowledgment = target
+                    except ValueError:
+                        print("Invalid message format.")
+                        acknowledgment = "Invalid format"
+                else:
+                    print(f"Received unformatted message: {message}")
+                    acknowledgment = "Invalid format"
+
                 server_socket.sendto(acknowledgment.encode('utf-8'), traffic_generator_address)
                 
 
