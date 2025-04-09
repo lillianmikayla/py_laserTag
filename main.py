@@ -442,10 +442,10 @@ def update_game_action(event_queue):
             elif player2 in [43, 53]:  # Base hit events
                 if player2 == 43:
                     codename2 = "Red Base"
-                    addBase(player1, 'R')
+                    addBase(player1 - 1, 'R')
                 elif player2 == 53:
                     codename2 = "Green Base"
-                    addBase(player1, 'G')
+                    addBase(player1 - 3, 'G')
             else:
                 codename2 = f"Player {player2}"
 
