@@ -9,6 +9,7 @@ from PIL import Image, ImageTk
 import tkinter as tk
 import time
 import queue
+import pygame
 
 #from PlayerDatabase import PlayerDatabase
 
@@ -292,6 +293,19 @@ def show_main_window(app):
                 dpg.add_text("06:00", tag="GameTimer")
 
 
+
+# Music functions
+pygame.mixer.init()
+
+def play_music(track_path, loop=True, volume=1.0):
+    pygame.mixer.music.load(track_path)
+    pygame.mixer.music.set_volume(volume)
+    pygame.mixer.music.play(-1 if loop else 0)
+
+def stop_music():
+    pygame.mixer.music.stop()
+
+
 # Define the countdown function
 def countdown(event, pos_x, pos_y):
     root = tk.Tk()
@@ -322,6 +336,11 @@ def game_timer():
     stop_game()
 
 def start_game():
+
+    # Switch to game music
+    pygame.mixer.music.fadeout(2000)
+    play_music("photon_tracks/game_mixdown.mp3", loop=False, volume=0.8)
+        
     # # Create an event to signal when the countdown is complete
     # countdown_complete_event = multiprocessing.Event()
 
@@ -463,6 +482,9 @@ def main():
     udp_server_thread = threading.Thread(target=start_udp_server, args=(event_queue,))
     udp_server_thread.start()
 
+    # Play entry screen music
+    play_music("photon_tracks/Entry-screen.mp3", loop=True, volume=0.2)
+
     #init graphics
     dpg.create_context()
     dpg.create_viewport(title='Laser Tag', width=910, height=610)
@@ -502,6 +524,7 @@ def main():
         update_game_action(event_queue)
         dpg.render_dearpygui_frame()
 
+    stop_music()
     dpg.destroy_context()
 
 if __name__ == "__main__":
