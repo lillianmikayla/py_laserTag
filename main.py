@@ -85,14 +85,12 @@ class PlayerDBApp:
 #             return None
 #         else:
 #             self.localPlayerCount += 1
-#             #udpclient.player_added(self.localPlayerCount)
 #             return IDcheck
     
 #     def addPlayer(self, id, codename):
 #         #add player to database
 #         self.fakeDatabase[id] = codename
 #         self.localPlayerCount += 1
-#         #udpclient.player_added(self.localPlayerCount)
 
 #callback section: sender = table cell ID, app_data = value in cell, user_data = tuple of (row, column, app)
 
@@ -141,10 +139,14 @@ def input_id_callback(sender, app_data, user_data):
                 dpg.set_value(f"redTable_codename_{user_data[0]}", check)
                 dpg.configure_item(f"redTable_equipment_{user_data[0]}", readonly=False)
                 dpg.bind_item_theme(sender, 0)
+                player_codenames["red"][user_data[0]] = check # store red codename in dictionary
+                player_scores["red"][user_data[0]] = 0  # store red score in dictionary
             elif sender == f"greenTable_{user_data[0]}":
                 dpg.set_value(f"greenTable_codename_{user_data[0]}", check)
                 dpg.configure_item(f"greenTable_equipment_{user_data[0]}", readonly=False) 
                 dpg.bind_item_theme(sender, 0)
+                player_codenames["green"][user_data[0]] = check 
+                player_scores["green"][user_data[0]] = 0
             return
         
 def input_codename_callback(sender, app_data, user_data):
