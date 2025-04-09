@@ -8,6 +8,7 @@ import multiprocessing
 from PIL import Image, ImageTk
 import tkinter as tk
 import time
+import queue
 
 #from PlayerDatabase import PlayerDatabase
 
@@ -275,7 +276,7 @@ def show_main_window(app):
                 dpg.add_text("Red Team Scores", color=(255,200,200), indent=70)
 
             # Add a new child window for current game action
-            with dpg.child_window(width=288, height=500):
+            with dpg.child_window(width=288, height=500, tag="CurrentGameAction"):
                 dpg.add_text("Current Game Action", indent=70)
 
             with dpg.child_window(width=288, height=500, tag="GreenTeamScores"):
@@ -382,11 +383,27 @@ def clear_entries():
     player_scores["red"].clear()
     player_scores["green"].clear()
     
+def update_game_action(event_queue):
+    while not event_queue.empty():
+        # Get the next event from the queue
+        event = event_queue.get()
 
+        # Parse the event string (e.g., "2:4")
+        try:
+            player1, player2 = event.split(":")
+            formatted_event = f"Player {player1} hit Player {player2}"
+        except ValueError:
+            # Handle invalid event format
+            formatted_event = f"Invalid event: {event}"
+
+        # Add the formatted event to the Current Game Action section
+        dpg.add_text(formatted_event, parent="CurrentGameAction", color=(255, 255, 255))  # Display the event in white text
 
 def main():
+    event_queue = queue.Queue()
+
     # Start the UDP server in a separate thread
-    udp_server_thread = threading.Thread(target=start_udp_server, daemon=True)
+    udp_server_thread = threading.Thread(target=start_udp_server, args=(event_queue,))
     udp_server_thread.start()
 
     #init graphics
@@ -424,6 +441,7 @@ def main():
 
     #second, regular loop (continuously ran)
     while dpg.is_dearpygui_running():
+        update_game_action(event_queue)
         dpg.render_dearpygui_frame()
 
     dpg.destroy_context()

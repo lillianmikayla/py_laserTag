@@ -1,7 +1,8 @@
 import socket
+import queue
 
 # This server implementation listens for events from the traffic generator
-def start_udp_server():
+def start_udp_server(event_queue):
     bufferSize = 1024
     localIP = "127.0.0.1"
     localPort = 7501  # Server listens on port 7501
@@ -34,6 +35,7 @@ def start_udp_server():
                 break
             else:
                 print(f"Event received: {message}")
+                event_queue.put(message)
 
                 acknowledgment = "Event received"
                 server_socket.sendto(acknowledgment.encode('utf-8'), traffic_generator_address)
