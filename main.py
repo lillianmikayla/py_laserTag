@@ -314,7 +314,7 @@ def countdown(event, pos_x, pos_y):
     event.set()  # Signal that the countdown is complete
 
 def game_timer():
-    t = 6 # CHANGE TO '360' FOR FINAL. THIS IS FOR SHORTER TESTING TIME LOL.
+    t = 360 # CHANGE TO '360' FOR FINAL. THIS IS FOR SHORTER TESTING TIME LOL.
     while t >= 0:
         minutes, seconds = divmod(t, 60)
         timer = '{:02d}:{:02d}'.format(minutes, seconds)
