@@ -10,7 +10,8 @@ $ python3 -m pip3 install --upgrade pip
 $ python3 -m pip3 install dearpygui  
 $ sudo apt install libpq-dev python3-dev  
 $ python3 -m pip3 install psycopg2  
-$ pip install Pillow (<- new!)
+$ pip install Pillow 
+$ pip install pygame (<-- NEW!!)
   
 To run the program:  
 $ python3 main.py  
