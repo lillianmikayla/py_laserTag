@@ -47,14 +47,14 @@ class PlayerDBApp:
             return None
         else:
             self.localPlayerCount += 1
-            udpclient.player_added(self.localPlayerCount)
+            #udpclient.player_added(self.localPlayerCount)
             return IDcheck
     
     def addPlayer(self, id, codename):
         #add player to database
         self.db.add_player(id, codename)
         self.localPlayerCount += 1
-        udpclient.player_added(self.localPlayerCount)
+        #udpclient.player_added(self.localPlayerCount)
         
 # class fakeDatabase:
 #     def __init__(self):

@@ -14,10 +14,10 @@ def change_network(new_ip):
     ADDR = (new_ip, localPort) # Update the address with the new IP.
     print(f"Client network changed to IP: {new_ip}, Port: {localPort}")
 
-def player_added(player_count):
-    equipmentID = input(f"Enter equipment ID of player {player_count}: ") # Collect equipment ID from user
-    bytesToSend = equipmentID.encode(FORMAT)
-    client.sendto(bytesToSend, ADDR)
+# def player_added(player_count):
+#     equipmentID = input(f"Enter equipment ID of player {player_count}: ") # Collect equipment ID from user
+#     bytesToSend = equipmentID.encode(FORMAT)
+#     client.sendto(bytesToSend, ADDR)
         
 def inputEquipID(equipmentID):
     bytesToSend = equipmentID.encode(FORMAT)
