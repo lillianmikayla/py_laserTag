@@ -287,7 +287,9 @@ def show_main_window(app):
 
         # Game Timer window - 6 minutes per game, one time 30 second start down 
         with dpg.child_window(width=880, height=60):
-            dpg.add_text("Game Timer")
+            with dpg.group(horizontal=True):
+                dpg.add_text("Game Timer")
+                dpg.add_text("06:00", tag="GameTimer")
 
 
 # Define the countdown function
@@ -309,6 +311,15 @@ def countdown(event, pos_x, pos_y):
     root.destroy()
     event.set()  # Signal that the countdown is complete
 
+def game_timer():
+    t = 6 # CHANGE TO '360' FOR FINAL. THIS IS FOR SHORTER TESTING TIME LOL.
+    while t >= 0:
+        minutes, seconds = divmod(t, 60)
+        timer = '{:02d}:{:02d}'.format(minutes, seconds)
+        dpg.set_value("GameTimer", timer)
+        time.sleep(1)
+        t -= 1
+    stop_game()
 
 def start_game():
     # # Create an event to signal when the countdown is complete
@@ -323,6 +334,9 @@ def start_game():
 
     # # Wait for the countdown to complete
     # countdown_complete_event.wait()
+
+    game_timer_thread = threading.Thread(target=game_timer)
+    game_timer_thread.start()
 
     # Show the play action screen window, code for it should be directly above this function
     dpg.configure_item("PlayActionScreen", show=True)
