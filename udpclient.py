@@ -14,14 +14,22 @@ def change_network(new_ip):
     ADDR = (new_ip, localPort) # Update the address with the new IP.
     print(f"Client network changed to IP: {new_ip}, Port: {localPort}")
 
-def player_added(player_count):
-    equipmentID = input(f"Enter equipment ID of player {player_count}: ") # Collect equipment ID from user
-    bytesToSend = equipmentID.encode(FORMAT)
-    client.sendto(bytesToSend, ADDR)
+# def player_added(player_count):
+#     equipmentID = input(f"Enter equipment ID of player {player_count}: ") # Collect equipment ID from user
+#     bytesToSend = equipmentID.encode(FORMAT)
+#     client.sendto(bytesToSend, ADDR)
         
 def inputEquipID(equipmentID):
     bytesToSend = equipmentID.encode(FORMAT)
     client.sendto(bytesToSend, ADDR)
 
+def send_game_code(code):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    server_address = ("127.0.0.1", 7501)
+    message = str(code).encode()
+    sock.sendto(message, server_address)
+    sock.close()
+
 if __name__ == "__main__":
     print("Starting client...")
+    

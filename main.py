@@ -1,13 +1,15 @@
 import dearpygui.dearpygui as dpg
 import time
 import udpclient
+from udpserver import start_udp_server
 import threading
 import multiprocessing
-#from udpserver import start_udp_server
 
 from PIL import Image, ImageTk
 import tkinter as tk
 import time
+import queue
+import pygame
 
 from PlayerDatabase import PlayerDatabase
 
@@ -46,14 +48,12 @@ class PlayerDBApp:
             return None
         else:
             self.localPlayerCount += 1
-            #udpclient.player_added(self.localPlayerCount)
             return IDcheck
     
     def addPlayer(self, id, codename):
         #add player to database
         self.db.add_player(id, codename)
         self.localPlayerCount += 1
-        #udpclient.player_added(self.localPlayerCount)
         
 # class fakeDatabase:
 #     def __init__(self):
@@ -84,14 +84,12 @@ class PlayerDBApp:
 #             return None
 #         else:
 #             self.localPlayerCount += 1
-#             #udpclient.player_added(self.localPlayerCount)
 #             return IDcheck
     
 #     def addPlayer(self, id, codename):
 #         #add player to database
 #         self.fakeDatabase[id] = codename
 #         self.localPlayerCount += 1
-#         #udpclient.player_added(self.localPlayerCount)
 
 #callback section: sender = table cell ID, app_data = value in cell, user_data = tuple of (row, column, app)
 
@@ -105,6 +103,7 @@ player_scores= {
     "red": {},
     "green": {}
 }
+
 
 def input_id_callback(sender, app_data, user_data):
     #invalid theme for handling invalid input scenario
@@ -137,16 +136,16 @@ def input_id_callback(sender, app_data, user_data):
             if sender == f"redTable_{user_data[0]}":
                 # Set the codename to the value stored in check
                 dpg.set_value(f"redTable_codename_{user_data[0]}", check)
-                player_codenames["red"][user_data[0]] = check # store red codename in dictionary
-                player_scores["red"][user_data[0]] = 0  # store red score in dictionary
                 dpg.configure_item(f"redTable_equipment_{user_data[0]}", readonly=False)
                 dpg.bind_item_theme(sender, 0)
+                player_codenames["red"][user_data[0]] = check # store red codename in dictionary
+                player_scores["red"][user_data[0]] = 0  # store red score in dictionary
             elif sender == f"greenTable_{user_data[0]}":
                 dpg.set_value(f"greenTable_codename_{user_data[0]}", check)
-                player_codenames["green"][user_data[0]] = check
-                player_scores["green"][user_data[0]] = 0
                 dpg.configure_item(f"greenTable_equipment_{user_data[0]}", readonly=False) 
                 dpg.bind_item_theme(sender, 0)
+                player_codenames["green"][user_data[0]] = check 
+                player_scores["green"][user_data[0]] = 0
             return
         
 def input_codename_callback(sender, app_data, user_data):
@@ -169,7 +168,7 @@ def input_equipID_callback(sender, app_data, user_data):
 def network_swap_callback(sender, app_data, user_data):
     #further modification to handle bad IP needed (?)
     udpclient.change_network(app_data)
-    #print("Previously Linked to server")
+    #udpserver.change_network(app_data)
 
 def show_main_window(app):
     dpg.delete_item("Splash Window")
@@ -279,7 +278,7 @@ def show_main_window(app):
                 dpg.add_text("Red Team Scores", color=(255,200,200), indent=70)
 
             # Add a new child window for current game action
-            with dpg.child_window(width=288, height=500):
+            with dpg.child_window(width=288, height=500, tag="CurrentGameAction"):
                 dpg.add_text("Current Game Action", indent=70)
 
             with dpg.child_window(width=288, height=500, tag="GreenTeamScores"):
@@ -289,7 +288,22 @@ def show_main_window(app):
 
         # Game Timer window - 6 minutes per game, one time 30 second start down 
         with dpg.child_window(width=880, height=60):
-            dpg.add_text("Game Timer")
+            with dpg.group(horizontal=True):
+                dpg.add_text("Game Timer")
+                dpg.add_text("06:00", tag="GameTimer")
+
+
+
+# Music functions
+pygame.mixer.init()
+
+def play_music(track_path, loop=True, volume=1.0):
+    pygame.mixer.music.load(track_path)
+    pygame.mixer.music.set_volume(volume)
+    pygame.mixer.music.play(-1 if loop else 0)
+
+def stop_music():
+    pygame.mixer.music.stop()
 
 
 # Define the countdown function
@@ -311,8 +325,22 @@ def countdown(event, pos_x, pos_y):
     root.destroy()
     event.set()  # Signal that the countdown is complete
 
+def game_timer():
+    t = 360 # CHANGE TO '360' FOR FINAL. THIS IS FOR SHORTER TESTING TIME LOL.
+    while t >= 0:
+        minutes, seconds = divmod(t, 60)
+        timer = '{:02d}:{:02d}'.format(minutes, seconds)
+        dpg.set_value("GameTimer", timer)
+        time.sleep(1)
+        t -= 1
+    stop_game()
 
 def start_game():
+
+    # Switch to game music
+    pygame.mixer.music.fadeout(2000)
+    play_music("photon_tracks/GAME_mixdown.mp3", loop=False, volume=0.8)
+        
     # Create an event to signal when the countdown is complete
     countdown_complete_event = multiprocessing.Event()
 
@@ -326,6 +354,9 @@ def start_game():
     # Wait for the countdown to complete
     countdown_complete_event.wait()
 
+    game_timer_thread = threading.Thread(target=game_timer)
+    game_timer_thread.start()
+
     # Show the play action screen window, code for it should be directly above this function
     dpg.configure_item("PlayActionScreen", show=True)
 
@@ -334,11 +365,11 @@ def start_game():
         dpg.add_table_column()
         dpg.add_table_column()
         dpg.add_table_column()
-        for i, codename in player_codenames["red"].items(): # Iterate through the red team player_codenames dictionary
+        for i, codename in player_codenames["red"].items():  # Iterate through the red team player_codenames dictionary
             with dpg.table_row():
-                dpg.add_text(f"{codename}") # Display the codename
-                dpg.add_spacer() # spacer column 
-                dpg.add_text(f"{player_scores['red'][i]}") # Display the score using player_scores dictionary
+                dpg.add_text(f"{codename}", tag=f"playScreen_RedCodename{i}")  # Display the codename
+                dpg.add_spacer()  # Spacer column
+                dpg.add_text(f"{player_scores['red'][i]}", tag=f"playScreen_RedScore{i}")  # Display the score with a unique tag
 
     with dpg.table(header_row=False, parent="GreenTeamScores"):
         dpg.add_table_column()
@@ -346,9 +377,9 @@ def start_game():
         dpg.add_table_column()
         for i, codename in player_codenames["green"].items():
             with dpg.table_row():
-                dpg.add_text(f"{codename}")
+                dpg.add_text(f"{codename}", tag=f"playScreen_GreenCodename{i}")
                 dpg.add_spacer()
-                dpg.add_text(f"{player_scores['green'][i]}")
+                dpg.add_text(f"{player_scores['green'][i]}", tag=f"playScreen_GreenScore{i}")
 
     # Calculate and display the total scores
     total_red_score = sum(player_scores["red"].values())
@@ -362,6 +393,16 @@ def start_game():
     with dpg.group(horizontal=True, parent="GreenTeamScores"):
         dpg.add_spacer(width=65)  
         dpg.add_text(f"Total Score: {total_green_score}", tag="GreenTeamTotalScore")
+
+    udpclient.send_game_code(202)
+    print("Game start signal (202) sent.")
+
+
+def stop_game():
+    import udpserver
+    for i in range(3):
+        udpserver.server_should_stop = True
+        print("STOP GAME TRIGGERED")
 
 
 
@@ -383,16 +424,125 @@ def clear_entries():
     player_scores["red"].clear()
     player_scores["green"].clear()
     
+def addBase(playerID, team):
+    if team == 'R':
+        if " [B]" not in player_codenames["red"][playerID]:
+            # Append [B] to the codename in the dictionary
+            player_codenames["red"][playerID] += " [B]"
+            dpg.set_value(f"playScreen_RedCodename{playerID}", player_codenames["red"][playerID])
+    elif team == 'G':
+        if " [B]" not in player_codenames["green"][playerID]:    
+            player_codenames["green"][playerID] += " [B]"
+            dpg.set_value(f"playScreen_GreenCodename{playerID}", player_codenames["green"][playerID])
+    
+def update_game_action(event_queue):
+    while not event_queue.empty():
+        # Get the next event from the queue
+        event = event_queue.get()
 
+        try:
+            # Parse the event string (e.g., "2:4")
+            player1, player2 = event.split(":")
+            player1 = int(player1)
+            player2 = int(player2)
+
+            # Get codenames from dictionaries
+            if player1 in [1, 2]:  # Red team
+                codename1 = player_codenames["red"].get(player1 - 1, f"Player {player1}")
+            elif player1 in [3, 4]:  # Green team
+                codename1 = player_codenames["green"].get(player1 - 3, f"Player {player1}")
+            else:
+                codename1 = f"Player {player1}"
+
+            if player2 in [1, 2]:  # Red team
+                codename2 = player_codenames["red"].get(player2 - 1, f"Player {player2}")
+            elif player2 in [3, 4]:  # Green team
+                codename2 = player_codenames["green"].get(player2 - 3, f"Player {player2}")
+            elif player2 in [43, 53]:  # Base hit events
+                # Add 100 points to player1 for hitting a base
+                if player1 in [1, 2]:  # Red team
+                    player_scores["red"][player1 - 1] += 100
+                elif player1 in [3, 4]:  # Green team
+                    player_scores["green"][player1 - 3] += 100
+                # add style B
+                if player2 == 43:
+                    codename2 = "Red Base"
+                    addBase(player1 - 1, 'R')
+                elif player2 == 53:
+                    codename2 = "Green Base"
+                    addBase(player1 - 3, 'G')
+            else:
+                codename2 = f"Player {player2}"
+
+            # Scoring logic
+            if player1 in [1, 2] and player2 in [3, 4]:  # Red player hits Green player
+                player_scores["red"][player1 - 1] += 10
+            elif player1 in [3, 4] and player2 in [1, 2]:  # Green player hits Red player
+                player_scores["green"][player1 - 3] += 10
+            elif player1 in [1, 2] and player2 in [1, 2]:  # Red player hits Red player
+                player_scores["red"][player1 - 1] -= 10
+            elif player1 in [3, 4] and player2 in [3, 4]:  # Green player hits Green player
+                player_scores["green"][player1 - 3] -= 10
+
+            # Sort players by scores
+            sorted_red_scores = sorted(player_scores["red"].items(), key=lambda x: x[1], reverse=True)
+            sorted_green_scores = sorted(player_scores["green"].items(), key=lambda x: x[1], reverse=True)
+
+            # Update the GUI scores dynamically in sorted order
+            for rank, (player_id, score) in enumerate(sorted_red_scores):
+                codename = player_codenames["red"][player_id]
+                red_codename_tag = f"playScreen_RedCodename{rank}"
+                red_score_tag = f"playScreen_RedScore{rank}"
+
+                if dpg.does_item_exist(red_codename_tag):
+                    dpg.set_value(red_codename_tag, f"{codename}")
+                else:
+                    print(f"ERROR: Tag {red_codename_tag} does not exist.")
+
+                if dpg.does_item_exist(red_score_tag):
+                    dpg.set_value(red_score_tag, f"{score}")
+                else:
+                    print(f"ERROR: Tag {red_score_tag} does not exist.")
+
+            for rank, (player_id, score) in enumerate(sorted_green_scores):
+                codename = player_codenames["green"][player_id]
+                dpg.set_value(f"playScreen_GreenCodename{rank}", f"{codename}")
+                dpg.set_value(f"playScreen_GreenScore{rank}", f"{score}")
+
+            # Calculate total scores
+            total_red_score = sum(player_scores["red"].values())
+            total_green_score = sum(player_scores["green"].values())
+
+            # Update the total scores in the GUI
+            dpg.set_value("RedTeamTotalScore", f"Total Score: {total_red_score}")
+            dpg.set_value("GreenTeamTotalScore", f"Total Score: {total_green_score}")
+
+            # Format the event string
+            # Parse base [B]
+            codename1 = codename1.replace(" [B]", "")
+            codename2 = codename2.replace(" [B]", "")
+            formatted_event = f"{codename1} hit {codename2}"
+        except ValueError:
+            # Handle invalid event format
+            formatted_event = f"Invalid event: {event}"
+
+        # Add the formatted event to the Current Game Action section
+        dpg.add_text(formatted_event, parent="CurrentGameAction", color=(255, 255, 255))  # Display the event in white text
 
 def main():
+    event_queue = queue.Queue()
+
     # Start the UDP server in a separate thread
-    #udp_server_thread = threading.Thread(target=start_udp_server, daemon=True)
-    #udp_server_thread.start()
+    udp_server_thread = threading.Thread(target=start_udp_server, args=(event_queue,))
+    udp_server_thread.start()
+
+    # Play entry screen music
+    play_music("photon_tracks/Entry-Screen.mp3", loop=True, volume=0.2)
 
     #init graphics
     dpg.create_context()
     dpg.create_viewport(title='Laser Tag', width=910, height=610)
+
 
     #splash image
     with dpg.texture_registry():
@@ -425,8 +575,10 @@ def main():
 
     #second, regular loop (continuously ran)
     while dpg.is_dearpygui_running():
+        update_game_action(event_queue)
         dpg.render_dearpygui_frame()
 
+    stop_music()
     dpg.destroy_context()
 
 if __name__ == "__main__":
