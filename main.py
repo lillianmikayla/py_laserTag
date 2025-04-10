@@ -11,75 +11,39 @@ import time
 import queue
 import pygame
 
-# from PlayerDatabase import PlayerDatabase
+from PlayerDatabase import PlayerDatabase
 
 #git pull origin
 
 #player DB class, previously class main in the database main.py test file
 #commented out when not testing in VM
 
-# class PlayerDBApp:
-#     def __init__(self):
-#         self.db = PlayerDatabase()  # No need to pass credentials!
-#         self.localPlayerCount = 0
-
-#     def flush(self):
-#         self.db.clear_database()
-#         self.db.add_player(500, 'BhodiLi')
-#         self.db.add_player(501, 'Alpha')
-        
-#     def runTest(self):
-#         # Adding players
-#         self.db.add_player(500, 'BhodiLi')
-#         self.db.add_player(501, 'Alpha')
-
-#         # Retrieving player info
-#         print("Codename for ID 500:", self.db.get_codename_by_id(500))
-#         print("ID for codename 'Alpha':", self.db.get_id_by_codename('Alpha'))
-
-#         # Close DB connection
-#         #self.db.close_connection()
-        
-#     def checkID(self, id):
-#         #check for ID
-#         IDcheck = self.db.id_exists(id)
-#         if IDcheck == None:
-#             #add ID, prompt for codename
-#             return None
-#         else:
-#             self.localPlayerCount += 1
-#             return IDcheck
-    
-#     def addPlayer(self, id, codename):
-#         #add player to database
-#         self.db.add_player(id, codename)
-#         self.localPlayerCount += 1
-        
-class fakeDatabase:
+class PlayerDBApp:
     def __init__(self):
+        self.db = PlayerDatabase()  # No need to pass credentials!
         self.localPlayerCount = 0
-        self.fakeDatabase = {}
 
     def flush(self):
-        self.fakeDatabase.clear()
-        self.fakeDatabase[500] = 'BhodiLi'
-        self.fakeDatabase[501] = 'Alpha'
+        self.db.clear_database()
+        self.db.add_player(500, 'BhodiLi')
+        self.db.add_player(501, 'Alpha')
         
     def runTest(self):
         # Adding players
-        self.fakeDatabase[500] = 'BhodiLi'
-        self.fakeDatabase[501] = 'Alpha'
+        self.db.add_player(500, 'BhodiLi')
+        self.db.add_player(501, 'Alpha')
 
         # Retrieving player info
-        print("Codename for ID 500:", self.fakeDatabase[500])
+        print("Codename for ID 500:", self.db.get_codename_by_id(500))
+        print("ID for codename 'Alpha':", self.db.get_id_by_codename('Alpha'))
 
         # Close DB connection
         #self.db.close_connection()
         
     def checkID(self, id):
         #check for ID
-        IDcheck = self.fakeDatabase.get(id)
-        if IDcheck is None:
+        IDcheck = self.db.id_exists(id)
+        if IDcheck == None:
             #add ID, prompt for codename
             return None
         else:
@@ -88,8 +52,44 @@ class fakeDatabase:
     
     def addPlayer(self, id, codename):
         #add player to database
-        self.fakeDatabase[id] = codename
+        self.db.add_player(id, codename)
         self.localPlayerCount += 1
+        
+# class fakeDatabase:
+#     def __init__(self):
+#         self.localPlayerCount = 0
+#         self.fakeDatabase = {}
+
+#     def flush(self):
+#         self.fakeDatabase.clear()
+#         self.fakeDatabase[500] = 'BhodiLi'
+#         self.fakeDatabase[501] = 'Alpha'
+        
+#     def runTest(self):
+#         # Adding players
+#         self.fakeDatabase[500] = 'BhodiLi'
+#         self.fakeDatabase[501] = 'Alpha'
+
+#         # Retrieving player info
+#         print("Codename for ID 500:", self.fakeDatabase[500])
+
+#         # Close DB connection
+#         #self.db.close_connection()
+        
+#     def checkID(self, id):
+#         #check for ID
+#         IDcheck = self.fakeDatabase.get(id)
+#         if IDcheck is None:
+#             #add ID, prompt for codename
+#             return None
+#         else:
+#             self.localPlayerCount += 1
+#             return IDcheck
+    
+#     def addPlayer(self, id, codename):
+#         #add player to database
+#         self.fakeDatabase[id] = codename
+#         self.localPlayerCount += 1
 
 #callback section: sender = table cell ID, app_data = value in cell, user_data = tuple of (row, column, app)
 
@@ -326,7 +326,7 @@ def countdown(event, pos_x, pos_y):
     event.set()  # Signal that the countdown is complete
 
 def game_timer():
-    t = 60 # CHANGE TO '360' FOR FINAL. THIS IS FOR SHORTER TESTING TIME LOL.
+    t = 360 # CHANGE TO '360' FOR FINAL. THIS IS FOR SHORTER TESTING TIME LOL.
     while t >= 0:
         minutes, seconds = divmod(t, 60)
         timer = '{:02d}:{:02d}'.format(minutes, seconds)
@@ -341,18 +341,18 @@ def start_game():
     pygame.mixer.music.fadeout(2000)
     play_music("photon_tracks/GAME_mixdown.mp3", loop=False, volume=0.8)
         
-    # # Create an event to signal when the countdown is complete
-    # countdown_complete_event = multiprocessing.Event()
+    # Create an event to signal when the countdown is complete
+    countdown_complete_event = multiprocessing.Event()
 
-    # # Retrieve the position of the Dear PyGui window
-    # pos_x, pos_y = dpg.get_viewport_pos()
+    # Retrieve the position of the Dear PyGui window
+    pos_x, pos_y = dpg.get_viewport_pos()
 
-    # # Start the countdown in a separate process
-    # countdown_process = multiprocessing.Process(target=countdown, args=(countdown_complete_event, pos_x, pos_y))
-    # countdown_process.start()
+    # Start the countdown in a separate process
+    countdown_process = multiprocessing.Process(target=countdown, args=(countdown_complete_event, pos_x, pos_y))
+    countdown_process.start()
 
-    # # Wait for the countdown to complete
-    # countdown_complete_event.wait()
+    # Wait for the countdown to complete
+    countdown_complete_event.wait()
 
     game_timer_thread = threading.Thread(target=game_timer)
     game_timer_thread.start()
@@ -426,12 +426,14 @@ def clear_entries():
     
 def addBase(playerID, team):
     if team == 'R':
-        # Append [B] to the codename in the dictionary
-        player_codenames["red"][playerID] += " [B]"
-        dpg.set_value(f"playScreen_RedCodename{playerID}", player_codenames["red"][playerID])
+        if " [B]" not in player_codenames["red"][playerID]:
+            # Append [B] to the codename in the dictionary
+            player_codenames["red"][playerID] += " [B]"
+            dpg.set_value(f"playScreen_RedCodename{playerID}", player_codenames["red"][playerID])
     elif team == 'G':
-        player_codenames["green"][playerID] += " [B]"
-        dpg.set_value(f"playScreen_GreenCodename{playerID}", player_codenames["green"][playerID])
+        if " [B]" not in player_codenames["green"][playerID]:    
+            player_codenames["green"][playerID] += " [B]"
+            dpg.set_value(f"playScreen_GreenCodename{playerID}", player_codenames["green"][playerID])
     
 def update_game_action(event_queue):
     while not event_queue.empty():
@@ -516,6 +518,9 @@ def update_game_action(event_queue):
             dpg.set_value("GreenTeamTotalScore", f"Total Score: {total_green_score}")
 
             # Format the event string
+            # Parse base [B]
+            codename1 = codename1.replace(" [B]", "")
+            codename2 = codename2.replace(" [B]", "")
             formatted_event = f"{codename1} hit {codename2}"
         except ValueError:
             # Handle invalid event format
@@ -556,8 +561,8 @@ def main():
     splash_duration = 3  # duration in seconds
     start_time = time.time()
     
-    #app = PlayerDBApp()
-    app = fakeDatabase()
+    app = PlayerDBApp()
+    #app = fakeDatabase()
     
     #first, initial loop - splash screen
     while dpg.is_dearpygui_running():
