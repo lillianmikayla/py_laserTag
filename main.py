@@ -339,7 +339,7 @@ def start_game():
 
     # Switch to game music
     pygame.mixer.music.fadeout(2000)
-    play_music("photon_tracks/game_mixdown.mp3", loop=False, volume=0.8)
+    play_music("photon_tracks/GAME_mixdown.mp3", loop=False, volume=0.8)
         
     # # Create an event to signal when the countdown is complete
     # countdown_complete_event = multiprocessing.Event()
