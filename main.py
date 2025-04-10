@@ -426,12 +426,14 @@ def clear_entries():
     
 def addBase(playerID, team):
     if team == 'R':
-        # Append [B] to the codename in the dictionary
-        player_codenames["red"][playerID] += " [B]"
-        dpg.set_value(f"playScreen_RedCodename{playerID}", player_codenames["red"][playerID])
+        if " [B]" not in player_codenames["red"][playerID]:
+            # Append [B] to the codename in the dictionary
+            player_codenames["red"][playerID] += " [B]"
+            dpg.set_value(f"playScreen_RedCodename{playerID}", player_codenames["red"][playerID])
     elif team == 'G':
-        player_codenames["green"][playerID] += " [B]"
-        dpg.set_value(f"playScreen_GreenCodename{playerID}", player_codenames["green"][playerID])
+        if " [B]" not in player_codenames["green"][playerID]:    
+            player_codenames["green"][playerID] += " [B]"
+            dpg.set_value(f"playScreen_GreenCodename{playerID}", player_codenames["green"][playerID])
     
 def update_game_action(event_queue):
     while not event_queue.empty():
@@ -516,6 +518,9 @@ def update_game_action(event_queue):
             dpg.set_value("GreenTeamTotalScore", f"Total Score: {total_green_score}")
 
             # Format the event string
+            # Parse base [B]
+            codename1 = codename1.replace(" [B]", "")
+            codename2 = codename2.replace(" [B]", "")
             formatted_event = f"{codename1} hit {codename2}"
         except ValueError:
             # Handle invalid event format
