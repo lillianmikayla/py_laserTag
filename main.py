@@ -326,7 +326,7 @@ def countdown(event, pos_x, pos_y):
     event.set()  # Signal that the countdown is complete
 
 def game_timer():
-    t = 60 # CHANGE TO '360' FOR FINAL. THIS IS FOR SHORTER TESTING TIME LOL.
+    t = 360 # CHANGE TO '360' FOR FINAL. THIS IS FOR SHORTER TESTING TIME LOL.
     while t >= 0:
         minutes, seconds = divmod(t, 60)
         timer = '{:02d}:{:02d}'.format(minutes, seconds)
@@ -341,18 +341,18 @@ def start_game():
     pygame.mixer.music.fadeout(2000)
     play_music("photon_tracks/GAME_mixdown.mp3", loop=False, volume=0.8)
         
-    # # Create an event to signal when the countdown is complete
-    # countdown_complete_event = multiprocessing.Event()
+    # Create an event to signal when the countdown is complete
+    countdown_complete_event = multiprocessing.Event()
 
-    # # Retrieve the position of the Dear PyGui window
-    # pos_x, pos_y = dpg.get_viewport_pos()
+    # Retrieve the position of the Dear PyGui window
+    pos_x, pos_y = dpg.get_viewport_pos()
 
-    # # Start the countdown in a separate process
-    # countdown_process = multiprocessing.Process(target=countdown, args=(countdown_complete_event, pos_x, pos_y))
-    # countdown_process.start()
+    # Start the countdown in a separate process
+    countdown_process = multiprocessing.Process(target=countdown, args=(countdown_complete_event, pos_x, pos_y))
+    countdown_process.start()
 
-    # # Wait for the countdown to complete
-    # countdown_complete_event.wait()
+    # Wait for the countdown to complete
+    countdown_complete_event.wait()
 
     game_timer_thread = threading.Thread(target=game_timer)
     game_timer_thread.start()
