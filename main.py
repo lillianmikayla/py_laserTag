@@ -426,9 +426,12 @@ def clear_entries():
     
 def addBase(playerID, team):
     if team == 'R':
-        dpg.set_value(f"playScreen_RedCodename{playerID}", f"{player_codenames['red'][playerID]} [B]")
+        # Append [B] to the codename in the dictionary
+        player_codenames["red"][playerID] += " [B]"
+        dpg.set_value(f"playScreen_RedCodename{playerID}", player_codenames["red"][playerID])
     elif team == 'G':
-        dpg.set_value(f"playScreen_GreenCodename{playerID}", f"{player_codenames['green'][playerID]} [B]")
+        player_codenames["green"][playerID] += " [B]"
+        dpg.set_value(f"playScreen_GreenCodename{playerID}", player_codenames["green"][playerID])
     
 def update_game_action(event_queue):
     while not event_queue.empty():
@@ -454,17 +457,18 @@ def update_game_action(event_queue):
             elif player2 in [3, 4]:  # Green team
                 codename2 = player_codenames["green"].get(player2 - 3, f"Player {player2}")
             elif player2 in [43, 53]:  # Base hit events
+                # Add 100 points to player1 for hitting a base
+                if player1 in [1, 2]:  # Red team
+                    player_scores["red"][player1 - 1] += 100
+                elif player1 in [3, 4]:  # Green team
+                    player_scores["green"][player1 - 3] += 100
+                # add style B
                 if player2 == 43:
                     codename2 = "Red Base"
                     addBase(player1 - 1, 'R')
                 elif player2 == 53:
                     codename2 = "Green Base"
                     addBase(player1 - 3, 'G')
-            # Add 100 points to player1 for hitting a base
-                if player1 in [1, 2]:  # Red team
-                    player_scores["red"][player1 - 1] += 100
-                elif player1 in [3, 4]:  # Green team
-                    player_scores["green"][player1 - 3] += 100
             else:
                 codename2 = f"Player {player2}"
 
@@ -478,11 +482,38 @@ def update_game_action(event_queue):
             elif player1 in [3, 4] and player2 in [3, 4]:  # Green player hits Green player
                 player_scores["green"][player1 - 3] -= 10
 
-            # Update the GUI scores
-            for i, score in player_scores["red"].items():
-                dpg.set_value(f"playScreen_RedScore{i}", f"{score}")
-            for i, score in player_scores["green"].items():
-                dpg.set_value(f"playScreen_GreenScore{i}", f"{score}")
+            # Sort players by scores
+            sorted_red_scores = sorted(player_scores["red"].items(), key=lambda x: x[1], reverse=True)
+            sorted_green_scores = sorted(player_scores["green"].items(), key=lambda x: x[1], reverse=True)
+
+            # Update the GUI scores dynamically in sorted order
+            for rank, (player_id, score) in enumerate(sorted_red_scores):
+                codename = player_codenames["red"][player_id]
+                red_codename_tag = f"playScreen_RedCodename{rank}"
+                red_score_tag = f"playScreen_RedScore{rank}"
+
+                if dpg.does_item_exist(red_codename_tag):
+                    dpg.set_value(red_codename_tag, f"{codename}")
+                else:
+                    print(f"ERROR: Tag {red_codename_tag} does not exist.")
+
+                if dpg.does_item_exist(red_score_tag):
+                    dpg.set_value(red_score_tag, f"{score}")
+                else:
+                    print(f"ERROR: Tag {red_score_tag} does not exist.")
+
+            for rank, (player_id, score) in enumerate(sorted_green_scores):
+                codename = player_codenames["green"][player_id]
+                dpg.set_value(f"playScreen_GreenCodename{rank}", f"{codename}")
+                dpg.set_value(f"playScreen_GreenScore{rank}", f"{score}")
+
+            # Calculate total scores
+            total_red_score = sum(player_scores["red"].values())
+            total_green_score = sum(player_scores["green"].values())
+
+            # Update the total scores in the GUI
+            dpg.set_value("RedTeamTotalScore", f"Total Score: {total_red_score}")
+            dpg.set_value("GreenTeamTotalScore", f"Total Score: {total_green_score}")
 
             # Format the event string
             formatted_event = f"{codename1} hit {codename2}"
