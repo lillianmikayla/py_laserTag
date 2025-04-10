@@ -532,7 +532,7 @@ def main():
     udp_server_thread.start()
 
     # Play entry screen music
-    play_music("photon_tracks/Entry-screen.mp3", loop=True, volume=0.2)
+    play_music("photon_tracks/Entry-Screen.mp3", loop=True, volume=0.2)
 
     #init graphics
     dpg.create_context()
