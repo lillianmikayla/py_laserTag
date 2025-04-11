@@ -104,6 +104,27 @@ player_scores= {
     "green": {}
 }
 
+def listen_for_hits():
+    bufferSize = 1024
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    server_socket.bind(("127.0.0.1", 7501))
+
+    print(f"[LISTENER] Listening for hit messages on {localIP}:{localPort}")
+
+    while True:
+        try:
+            data, addr = server_socket.recvfrom(bufferSize)
+            message = data.decode('utf-8').strip()
+            print(f"[LISTENER] Received game hit: {message}")
+
+            # send response back to traffic generator
+            server_socket.sendto("HIT".encode(), addr)
+            print(f"[LISTENER] Replied with OK to {addr}")
+
+        except Exception as e:
+            print(f"[LISTENER] Error: {e}")
+
+
 
 def input_id_callback(sender, app_data, user_data):
     #invalid theme for handling invalid input scenario
