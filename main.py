@@ -339,7 +339,7 @@ def start_game():
 
     # Switch to game music
     pygame.mixer.music.fadeout(2000)
-    play_music("photon_tracks/GAME_mixdown.wav", loop=False, volume=0.8)
+    play_music("photon_tracks/GAME_mixdown.mp3", loop=False, volume=0.8)
         
     # Create an event to signal when the countdown is complete
     countdown_complete_event = multiprocessing.Event()
@@ -537,7 +537,7 @@ def main():
     udp_server_thread.start()
 
     # Play entry screen music
-    play_music("photon_tracks/Entry-Screen.wav", loop=True, volume=0.2)
+    play_music("photon_tracks/Entry-Screen.mp3", loop=True, volume=0.2)
 
     #init graphics
     dpg.create_context()
