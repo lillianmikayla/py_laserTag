@@ -14,6 +14,8 @@ import pygame
 from PlayerDatabase import PlayerDatabase
 
 #git pull origin
+#git fetch origin integration-test
+#git reset --hard FETCH_HEAD
 
 #player DB class, previously class main in the database main.py test file
 #commented out when not testing in VM
@@ -103,7 +105,6 @@ player_scores= {
     "red": {},
     "green": {}
 }
-
 
 def input_id_callback(sender, app_data, user_data):
     #invalid theme for handling invalid input scenario
@@ -335,11 +336,25 @@ def game_timer():
         t -= 1
     stop_game()
 
+def update_total_score_colors():
+    total_red_score = sum(player_scores["red"].values())
+    total_green_score = sum(player_scores["green"].values())
+
+    if total_red_score > total_green_score: # red winning
+        dpg.configure_item("RedTeamTotalScore", color=(255, 0, 0, 255))  # red text
+        dpg.configure_item("GreenTeamTotalScore", color=(255, 255, 255, 255))  # White text
+    elif total_green_score > total_red_score: # green winning
+        dpg.configure_item("GreenTeamTotalScore", color=(0, 255, 0, 255))  # Green text
+        dpg.configure_item("RedTeamTotalScore", color=(255, 255, 255, 255))  # White text
+    else: # both
+        dpg.configure_item("RedTeamTotalScore", color=(255, 255, 0, 255))  # Yellow text
+        dpg.configure_item("GreenTeamTotalScore", color=(255, 255, 0, 255))  # Yellow text
+
 def start_game():
 
     # Switch to game music
     pygame.mixer.music.fadeout(2000)
-    play_music("photon_tracks/GAME_mixdown.mp3", loop=False, volume=0.8)
+    play_music("photon_tracks/GAME_mixdown.wav", loop=False, volume=0.8)
         
     # Create an event to signal when the countdown is complete
     countdown_complete_event = multiprocessing.Event()
@@ -394,17 +409,16 @@ def start_game():
         dpg.add_spacer(width=65)  
         dpg.add_text(f"Total Score: {total_green_score}", tag="GreenTeamTotalScore")
 
+    update_total_score_colors()
+
     udpclient.send_game_code(202)
     print("Game start signal (202) sent.")
-
 
 def stop_game():
     import udpserver
     for i in range(3):
         udpserver.server_should_stop = True
         print("STOP GAME TRIGGERED")
-
-
 
 def clear_entries():
     for i in range(15):
@@ -517,6 +531,8 @@ def update_game_action(event_queue):
             dpg.set_value("RedTeamTotalScore", f"Total Score: {total_red_score}")
             dpg.set_value("GreenTeamTotalScore", f"Total Score: {total_green_score}")
 
+            update_total_score_colors()
+
             # Format the event string
             # Parse base [B]
             codename1 = codename1.replace(" [B]", "")
@@ -537,7 +553,7 @@ def main():
     udp_server_thread.start()
 
     # Play entry screen music
-    play_music("photon_tracks/Entry-Screen.mp3", loop=True, volume=0.2)
+    play_music("photon_tracks/Entry-Screen.wav", loop=True, volume=0.2)
 
     #init graphics
     dpg.create_context()
@@ -562,7 +578,7 @@ def main():
     start_time = time.time()
     
     app = PlayerDBApp()
-    #app = fakeDatabase()
+    # app = fakeDatabase()
     
     #first, initial loop - splash screen
     while dpg.is_dearpygui_running():
