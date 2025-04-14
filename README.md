@@ -10,8 +10,8 @@ $ pip install --upgrade pip
 $ pip install dearpygui  
 $ sudo apt install libpq-dev python3-dev  
 $ python3 -m pip3 install psycopg2  
-$ pip install tk
-$ pip install Pillow 
+$ pip install tk  
+$ pip install Pillow  
 $ pip install pygame (<-- NEW!!)
   
 To run the program:  
