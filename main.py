@@ -14,6 +14,8 @@ import pygame
 from PlayerDatabase import PlayerDatabase
 
 #git pull origin
+#git fetch origin integration-test
+#git reset --hard FETCH_HEAD
 
 #player DB class, previously class main in the database main.py test file
 #commented out when not testing in VM
