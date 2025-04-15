@@ -293,6 +293,12 @@ def show_main_window(app):
                 dpg.add_text("Game Timer")
                 dpg.add_text("06:00", tag="GameTimer")
 
+                # Spacer to add some space between the timer and the message
+                dpg.add_spacer(width=20)
+
+                # Game Over Text (initially hidden)
+                dpg.add_text("Game Over! Press the X to get back to the player entry screen!", tag="GameOverText", show=False, color=(255, 0, 0))
+
 
 
 # Music functions
@@ -335,6 +341,7 @@ def game_timer():
         time.sleep(1)
         t -= 1
     stop_game()
+    dpg.configure_item("GameOverText", show=True)
 
 def update_total_score_colors():
     total_red_score = sum(player_scores["red"].values())
