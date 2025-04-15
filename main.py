@@ -10,6 +10,8 @@ import tkinter as tk
 import time
 import queue
 import pygame
+import random
+import os
 
 from PlayerDatabase import PlayerDatabase
 
@@ -313,6 +315,21 @@ def stop_music():
     pygame.mixer.music.stop()
 
 
+def play_random_track(folder_path, loop=False, volume=0.8):
+    # Get all supported files from the folder
+    all_tracks = [f for f in os.listdir(folder_path) if f.endswith((".flac", ".ogg", ".wav"))]
+
+    if not all_tracks:
+        print("[ERROR] No music files found.")
+        return
+
+    # Choose one at random
+    chosen = random.choice(all_tracks)
+    full_path = os.path.join(folder_path, chosen)
+    print(f"[DEBUG] Now playing: {full_path}")
+    threading.Timer(19, lambda: play_music(full_path, loop=loop, volume=volume)).start()
+
+
 # Define the countdown function
 def countdown(event, pos_x, pos_y):
     root = tk.Tk()
@@ -360,8 +377,9 @@ def update_total_score_colors():
 def start_game():
 
     # Switch to game music
-    pygame.mixer.music.fadeout(2000)
-    play_music("photon_tracks/GAME_mixdown.mp3", loop=False, volume=0.8)
+    # pygame.mixer.music.fadeout(2000)
+    # play_music("photon_tracks/GAME_mixdown.ogg", loop=False, volume=0.8)
+    play_random_track("photon_tracks")
         
     # Create an event to signal when the countdown is complete
     countdown_complete_event = multiprocessing.Event()
@@ -567,7 +585,7 @@ def main():
     udp_server_thread.start()
 
     # Play entry screen music
-    play_music("photon_tracks/Entry-Screen.mp3", loop=True, volume=0.2)
+    # play_music("photon_tracks/Entry-Screen.ogg", loop=True, volume=0.2)
 
     #init graphics
     dpg.create_context()
