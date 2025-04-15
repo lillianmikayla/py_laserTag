@@ -279,7 +279,7 @@ def show_main_window(app):
                 dpg.add_text("Red Team Scores", color=(255,200,200), indent=70)
 
             # Add a new child window for current game action
-            with dpg.child_window(width=288, height=500, tag="CurrentGameAction"):
+            with dpg.child_window(width=288, height=500, tag="CurrentGameAction", no_scrollbar=True):
                 dpg.add_text("Current Game Action", indent=70)
 
             with dpg.child_window(width=288, height=500, tag="GreenTeamScores"):
@@ -457,6 +457,8 @@ def addBase(playerID, team):
             dpg.set_value(f"playScreen_GreenCodename{playerID}", player_codenames["green"][playerID])
     
 def update_game_action(event_queue):
+    max_events = 20  # Maximum number of events to display
+
     while not event_queue.empty():
         # Get the next event from the queue
         event = event_queue.get()
@@ -552,9 +554,10 @@ def update_game_action(event_queue):
         # Add the formatted event to the Current Game Action section
         dpg.add_text(formatted_event, parent="CurrentGameAction", color=(255, 255, 255))  # Display the event in white text
 
-        # Auto-scroll to the bottom of the "Current Game Action" window
-        max_scroll = dpg.get_y_scroll_max("CurrentGameAction")
-        dpg.set_y_scroll("CurrentGameAction", max_scroll)
+        # Remove older events if the limit is exceeded
+        children = dpg.get_item_children("CurrentGameAction", 1)  # Get child items (slot 1 is for items)
+        if len(children) > max_events:
+            dpg.delete_item(children[0])  # Remove the oldest event
 
 def main():
     event_queue = queue.Queue()
