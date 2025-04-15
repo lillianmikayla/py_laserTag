@@ -320,7 +320,7 @@ def play_random_track(folder_path, loop=False, volume=0.8):
     chosen = random.choice(all_tracks)
     full_path = os.path.join(folder_path, chosen)
     print(f"[DEBUG] Now playing: {full_path}")
-    threading.Timer(17, lambda: play_music(full_path, loop=loop, volume=volume)).start()
+    threading.Timer(21, lambda: play_music(full_path, loop=loop, volume=volume)).start()
 
 
 # Define the countdown function
