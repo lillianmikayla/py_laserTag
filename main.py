@@ -545,6 +545,10 @@ def update_game_action(event_queue):
         # Add the formatted event to the Current Game Action section
         dpg.add_text(formatted_event, parent="CurrentGameAction", color=(255, 255, 255))  # Display the event in white text
 
+        # Auto-scroll to the bottom of the "Current Game Action" window
+        max_scroll = dpg.get_y_scroll_max("CurrentGameAction")
+        dpg.set_y_scroll("CurrentGameAction", max_scroll)
+
 def main():
     event_queue = queue.Queue()
 
