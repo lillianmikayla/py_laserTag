@@ -317,7 +317,7 @@ def stop_music():
 
 def play_random_track(folder_path, loop=False, volume=0.8):
     # Get all supported files from the folder
-    all_tracks = [f for f in os.listdir(folder_path) if f.endswith((".flac", ".ogg", ".wav", ".mp3"))]
+    all_tracks = [f for f in os.listdir(folder_path) if f.endswith((".flac", ".ogg", ".wav"))]
 
     if not all_tracks:
         print("[ERROR] No music files found.")
